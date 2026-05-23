@@ -23,6 +23,10 @@ This skill systematically discovers, evaluates, and deeply analyzes GitHub repos
 **Output**: `./github-research-output/{slug}/` relative to the current working directory.
 **Input**: A deep-research output directory (containing `paper_db.jsonl`, phase reports, `code_repos.md`, etc.)
 
+## Publication Quality Dependency
+
+When using paper titles or arXiv IDs to discover repositories, only use papers from a `paper_db.jsonl` that has passed `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py`. Do not use MDPI, blocked low-quality venues, or predatory-publisher matches to seed Papers With Code or paper-to-repo lookups.
+
 ## 6-Phase Pipeline
 
 ```
@@ -72,7 +76,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 | `extract_research_refs.py` | Parse deep-research output for GitHub URLs, paper refs, keywords | `--research-dir`, `--output` |
 | `search_github.py` | Search GitHub repos via `gh api` | `--query`, `--language`, `--min-stars`, `--sort`, `--max-results`, `--topic`, `--output` |
 | `search_github_code.py` | Search GitHub code for implementations | `--query`, `--language`, `--filename`, `--max-results`, `--output` |
-| `search_paperswithcode.py` | Search Papers With Code for paper→repo mappings | `--paper-title`, `--arxiv-id`, `--query`, `--output` |
+| `search_paperswithcode.py` | Search Papers With Code for paper→repo mappings | Prefer `--arxiv-id` from filtered `paper_db.jsonl`; avoid broad `--query` unless explicitly needed |
 | `repo_db.py` | JSONL repo database management | subcommands: `merge`, `filter`, `score`, `search`, `tag`, `stats`, `export`, `rank` |
 | `repo_metadata.py` | Fetch detailed metadata via `gh api` | `--repos`, `--input`, `--output`, `--delay` |
 | `clone_repo.py` | Shallow-clone repos for analysis | `--repo`, `--output-dir`, `--depth`, `--branch` |
@@ -106,7 +110,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 3. **Review extracted refs**: Read the generated JSONL. Note:
    - GitHub URLs found directly in reports
-   - Paper titles and arxiv IDs (for Papers With Code lookup)
+   - Paper titles and arxiv IDs from filtered paper databases only (for Papers With Code lookup)
    - Research keywords and themes (for GitHub search queries)
 
 4. **Write intake summary**: Create `phase1_intake/intake_summary.md` with:
@@ -135,7 +139,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
      --output github-research-output/$SLUG/phase2_discovery/search_results/direct_urls.jsonl
    ```
 
-2. **Search Papers With Code**: For each paper with an arxiv ID:
+2. **Search Papers With Code**: For each filtered paper with an arxiv ID. Prefer exact `--arxiv-id`; do not use broad Papers With Code query results seeded by blocked papers.
    ```bash
    python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/search_paperswithcode.py \
      --arxiv-id 2401.12345 \

@@ -36,6 +36,17 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
   --api-key "$(grep S2_API_Key $HOME/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')"
 ```
 
+Before adding any candidate from search output, apply the user venue quality filter:
+
+```bash
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
+  --input candidates_raw.jsonl \
+  --output candidates_filtered.jsonl \
+  --report quality_filter_report.json \
+  --strict-target-venues \
+  --allow-preprints
+```
+
 ### Harvest missing citations automatically
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/citation-management/scripts/harvest_citations.py \
@@ -60,15 +71,17 @@ Based on AI-Scientist's 20-round citation harvesting loop. For each round:
 1. Read the current `.tex` draft
 2. Identify the most important missing citation
 3. Search Semantic Scholar via script
-4. Select the most relevant paper from results
-5. Extract BibTeX and generate a clean key (`lastNameYearWord`)
-6. Append to `.bib` (skip if key exists)
-7. Insert `\cite{key}` at the appropriate location
-8. Stop when no more gaps or 20 rounds reached
+4. Apply the venue quality filter to candidate papers
+5. Select the most relevant paper from filtered results
+6. Extract BibTeX and generate a clean key (`lastNameYearWord`)
+7. Append to `.bib` (skip if key exists)
+8. Insert `\cite{key}` at the appropriate location
+9. Stop when no more gaps or 20 rounds reached
 
 **Key rules:**
 - DO NOT add a citation that already exists
 - Only add citations found via API — never fabricate
+- Never add MDPI, blocked low-quality venues, or predatory-publisher matches as citations
 - Cite broadly — not just popular papers
 - Do not copy verbatim from prior literature
 
@@ -79,6 +92,7 @@ Run `validate_citations.py` to catch all issues before compilation. Fix any repo
 ## Action: `add` — Add Specific Paper
 
 Search Semantic Scholar for the paper, extract BibTeX, clean the key, append to `.bib`.
+If search returns multiple candidates, filter them first and add only candidates that pass the user venue quality policy.
 
 BibTeX key format: `firstAuthorLastNameYearFirstContentWord` (e.g., `vaswani2017attention`)
 

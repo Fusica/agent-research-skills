@@ -13,8 +13,10 @@ Usage:
 """
 
 import argparse
+import importlib.util
 import json
 import os
+from pathlib import Path
 import sys
 import time
 import urllib.error
@@ -24,7 +26,29 @@ import urllib.request
 
 S2_API_KEY = os.environ.get("SEMANTIC_SCHOLAR_API_KEY", "")
 S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
-FIELDS = "title,authors,venue,year,abstract,citationCount"
+FIELDS = "title,authors,venue,year,abstract,citationCount,externalIds,url"
+
+
+def load_quality_filter():
+    """Load the shared publication quality filter from the deep-research skill."""
+    candidates = []
+    codex_home = os.environ.get("CODEX_HOME")
+    if codex_home:
+        candidates.append(Path(codex_home) / "skills/deep-research/scripts/filter_publications.py")
+    candidates.append(Path.home() / ".codex/skills/deep-research/scripts/filter_publications.py")
+    candidates.append(Path(__file__).resolve().parents[2] / "deep-research/scripts/filter_publications.py")
+
+    for path in candidates:
+        if path.exists():
+            spec = importlib.util.spec_from_file_location("filter_publications", path)
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                return module.filter_records
+    raise RuntimeError("Could not locate deep-research/scripts/filter_publications.py")
+
+
+QUALITY_FILTER = load_quality_filter()
 
 
 def search_semantic_scholar(query: str, limit: int = 10) -> list[dict]:
@@ -55,6 +79,22 @@ def search_semantic_scholar(query: str, limit: int = 10) -> list[dict]:
             time.sleep(2)
             continue
     return []
+
+
+def normalize_for_quality_filter(paper: dict) -> dict:
+    """Add common fields expected by the shared quality filter."""
+    record = dict(paper)
+    external_ids = record.get("externalIds", {}) or {}
+    record["doi"] = record.get("doi") or external_ids.get("DOI", "")
+    record["arxiv_id"] = record.get("arxiv_id") or external_ids.get("ArXiv", "")
+    record["source"] = record.get("source") or "semantic_scholar"
+    return record
+
+
+def apply_quality_filter(papers: list[dict]) -> tuple[list[dict], dict]:
+    """Apply the user's venue/publisher quality policy to candidate papers."""
+    normalized = [normalize_for_quality_filter(paper) for paper in papers]
+    return QUALITY_FILTER(normalized, strict_target_venues=True, allow_preprints=True)
 
 
 def format_paper(paper: dict) -> str:
@@ -132,10 +172,17 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
         queries_used.append(query)
         print(f"Round {round_num}/{max_rounds}: Searching \"{query}\"")
 
-        papers = search_semantic_scholar(query, limit=result_limit)
+        raw_papers = search_semantic_scholar(query, limit=result_limit)
+        papers, quality_report = apply_quality_filter(raw_papers)
 
-        if not papers:
+        if not raw_papers:
             print("  No results found.")
+            print()
+            continue
+        if quality_report["rejected"]:
+            print(f"  Quality filter rejected {quality_report['rejected']} of {quality_report['total']} results.")
+        if not papers:
+            print("  No results remain after quality filtering.")
             print()
             continue
 

@@ -30,6 +30,7 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 ## References
 
 - Assessment prompts and criteria: `${CODEX_HOME:-$HOME/.codex}/skills/novelty-assessment/references/assessment-prompts.md`
+- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
 
 ## Workflow
 
@@ -42,9 +43,10 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 For each round:
 1. Generate a targeted search query
 2. Search Semantic Scholar / arXiv / OpenAlex
-3. Review top-10 results with abstracts
-4. Assess overlap with the idea
-5. Decide: need more searching, or ready to decide
+3. Apply `filter_publications.py` or use `novelty_check.py`, which applies the same quality filter internally
+4. Review top filtered results with abstracts
+5. Assess overlap with the idea
+6. Decide: need more searching, or ready to decide
 
 ### Step 3: Make Decision
 - **Novel**: After sufficient searching, no paper significantly overlaps
@@ -86,6 +88,7 @@ formulation, or insight.
 - A paper idea is NOT novel if it's a trivial extension
 - Consider both methodology novelty AND application novelty
 - Check for concurrent/recent arXiv submissions
+- Do not use MDPI, blocked low-quality venues, or predatory-publisher matches as overlap evidence; report them only as excluded by user quality policy if relevant
 
 ## Related Skills
 - Upstream: [literature-search](../literature-search/), [deep-research](../deep-research/)

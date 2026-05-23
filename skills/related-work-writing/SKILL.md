@@ -16,6 +16,7 @@ Generate publication-quality Related Work sections with proper citations and the
 ## References
 
 - Related work writing prompts and strategies: `${CODEX_HOME:-$HOME/.codex}/skills/related-work-writing/references/related-work-prompts.md`
+- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
 
 ## Workflow
 
@@ -25,6 +26,8 @@ Generate publication-quality Related Work sections with proper citations and the
 - List the technical components that need literature context
 
 ### Step 2: Organize Literature by Theme
+Before grouping papers, verify the collected literature came from filtered `paper_db.jsonl`, `quality_filter_report.json`, or filtered citation results. Do not use excluded papers as evidence.
+
 Group related papers into thematic clusters:
 - Each cluster should represent a research direction or technique
 - Common themes: problem formulation, methodology family, application domain, evaluation approach
@@ -48,6 +51,7 @@ For each thematic group:
 - **Compare and contrast, don't just describe** — "Unlike [X] which assumes..., our method..."
 - **Organize by theme, not chronologically** — Group by research direction
 - **Cite broadly** — Not just the most popular papers; include recent and diverse work
+- **Cite filtered work only** — Do not include MDPI, blocked low-quality venues, or predatory-publisher matches
 - **Be fair** — Acknowledge strengths of prior work before stating limitations
 - **Explain inapplicability** — If a method could apply to your setting, explain why you don't compare experimentally, or add it to experiments
 - **Use present tense for established facts** — "Smith et al. propose..." or "This approach uses..."

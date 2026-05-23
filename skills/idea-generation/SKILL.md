@@ -27,6 +27,7 @@ Performs iterative literature search to assess if an idea is novel.
 ## References
 
 - Ideation prompts (generation, reflection, novelty): `${CODEX_HOME:-$HOME/.codex}/skills/idea-generation/references/ideation-prompts.md`
+- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
 
 ## Workflow
 
@@ -45,9 +46,10 @@ For each idea:
 ### Step 3: Novelty Assessment
 For each promising idea:
 1. Run `novelty_check.py` or manually search Semantic Scholar / arXiv
-2. Use the novelty checking prompts from references
-3. Multi-round search: generate queries, review results, decide
-4. Binary decision: Novel / Not Novel with justification
+2. Apply the venue quality filter before judging similar papers
+3. Use the novelty checking prompts from references
+4. Multi-round search: generate queries, review filtered results, decide
+5. Binary decision: Novel / Not Novel with justification
 
 ### Step 4: Rank and Select
 - Score each idea on three dimensions (1-10): Interestingness, Feasibility, Novelty
@@ -76,6 +78,7 @@ For each promising idea:
 - Be a harsh critic for novelty — ensure sufficient contribution for a conference paper
 - Each idea should stem from a simple, elegant question or hypothesis
 - Always check novelty before committing to an idea
+- Do not use MDPI, blocked low-quality venues, or predatory-publisher matches as novelty evidence; if they appear, treat them only as excluded by user quality policy
 
 ## Related Skills
 - Upstream: [literature-search](../literature-search/), [deep-research](../deep-research/)

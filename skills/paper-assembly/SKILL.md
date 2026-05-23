@@ -38,7 +38,7 @@ Run phases in dependency order:
 
 | Phase | Skill | Input | Output |
 |-------|-------|-------|--------|
-| 1. Literature | literature-search, literature-review | Topic | Knowledge base, BibTeX |
+| 1. Literature | literature-search, literature-review | Topic | Filtered knowledge base, quality_filter_report.json, BibTeX |
 | 2. Planning | research-planning | Knowledge base | Paper structure, task list |
 | 3. Code | experiment-code | Plan | Training/eval pipeline |
 | 4. Experiments | experiment-design | Code | Results JSON/CSV |
@@ -59,6 +59,7 @@ After each phase completes:
 ### Step 4: Quality Gates
 Before proceeding to the next phase:
 - Verify all required outputs exist
+- For literature/citation phases, verify `quality_filter_report.json` exists or confirm the source is a filtered `paper_db.jsonl`
 - Check for consistency (e.g., all cited keys in .bib)
 - Validate figures/tables match experimental results
 
@@ -106,6 +107,7 @@ Human can intervene at any phase boundary for review/correction.
 ## Rules
 
 - Never skip phases — each depends on previous outputs
+- Never propagate unfiltered literature or citation candidates into planning, related work, or writing
 - Save checkpoints after every phase completion
 - Human review is recommended at phase boundaries
 - All numbers in the paper must trace to actual experiment logs
