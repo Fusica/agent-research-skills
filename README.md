@@ -16,9 +16,11 @@ This repository intentionally contains only the core academic research lifecycle
 
 ## Install
 
-From a checkout of this repository:
+On a new computer, clone this repository and install the skills:
 
 ```bash
+git clone https://github.com/Fusica/agent-research-skills.git
+cd agent-research-skills
 ./install.sh
 ```
 
@@ -32,6 +34,37 @@ The installer writes to:
 
 ```bash
 ${CODEX_HOME:-$HOME/.codex}/skills
+```
+
+Restart Codex after installing or updating skills.
+
+## Update Existing Computer
+
+From an existing checkout of this repository:
+
+```bash
+git pull
+./install.sh --force
+```
+
+Or use the helper script:
+
+```bash
+./update.sh
+```
+
+`update.sh` pulls the latest `main` branch and overwrites the 31 bundled skills in `${CODEX_HOME:-$HOME/.codex}/skills`.
+
+## Sync Local Edits Back
+
+If you edit skills directly in `${CODEX_HOME:-$HOME/.codex}/skills`, copy the changed skill back into this repository before committing:
+
+```bash
+cp -R "${CODEX_HOME:-$HOME/.codex}/skills/<skill-name>" "skills/<skill-name>"
+git status
+git add skills/<skill-name>
+git commit -m "feat: update <skill-name> skill"
+git push
 ```
 
 ## Notes
