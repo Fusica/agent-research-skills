@@ -21,18 +21,18 @@ Completion criteria:
 ```
 
 ### Stage 2: Baseline Tuning
-**Goal**: Optimize hyperparameters and test on multiple datasets.
+**Goal**: Optimize hyperparameters and test on route-appropriate independent evaluation contexts.
 
 ```
 Stage 2 - Baseline Tuning:
 - Tune learning rate, batch size, and key hyperparameters
-- Test on at least 2 datasets
+- Test on the independent evaluation contexts required by the paper route
 - Compare against published baselines
-- Run 3 seeds for statistical significance
+- Use route-appropriate replication: seeds for stochastic ML training, trials/episodes for RL, scenes/environments/robots for robotics, or prompt runs for LLM/VLM systems
 
 Completion criteria:
 - Results competitive with or better than baselines
-- Consistent across multiple seeds
+- Consistent across the chosen replication unit when meaningful for the task
 - Training curves show stable convergence
 ```
 
@@ -42,13 +42,13 @@ Completion criteria:
 ```
 Stage 3 - Creative Research:
 - Implement novel improvements to the method
-- Test on 3+ datasets
+- Expand only to decisive datasets, tasks, environments, robots, scenes, trajectories, domains, or user scenarios
 - Compare against 3+ baselines
 - Ablation of key design choices
 - Generate publication-quality figures
 
 Completion criteria:
-- Clear improvement over baselines on most datasets
+- Clear improvement over baselines in the decisive evaluation contexts
 - Ablation supports contribution claims
 - Figures are informative and well-designed
 ```
@@ -61,13 +61,18 @@ Stage 4 - Ablation Studies:
 - Remove/modify each key component one at a time
 - Measure impact on performance
 - Sensitivity analysis for key hyperparameters
-- Report statistical significance (mean ± std over 3+ seeds)
+- Report uncertainty using the appropriate repeated measurements: mean/std over seeds, success-rate intervals over trials, bootstrap CIs, or descriptive evidence when comparable repetitions are unavailable
 
 Completion criteria:
 - Every claimed contribution verified by ablation
 - Hyperparameter sensitivity is reasonable
 - Results table is complete with all comparisons
 ```
+
+After every stage, add `convergence_state` with:
+`current_stable_kernel`, `open_but_bounded_questions`, `decision_log`,
+`freeze_criteria`, and `next_narrowing_step`. Do not add experiments unless
+they support a claim, resolve a fatal risk, or decide between venue profiles.
 
 ## VLM-Based Stage Completion Check (AI-Scientist-v2)
 

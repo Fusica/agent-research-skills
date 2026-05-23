@@ -148,10 +148,10 @@ def normalize_for_quality_filter(paper: dict) -> dict:
     return record
 
 
-def apply_quality_filter(papers: list[dict]) -> tuple[list[dict], dict]:
+def apply_quality_filter(papers: list[dict], *, strict_target_venues: bool = False) -> tuple[list[dict], dict]:
     """Apply the user's venue/publisher quality policy to citation candidates."""
     normalized = [normalize_for_quality_filter(paper) for paper in papers]
-    return QUALITY_FILTER(normalized, strict_target_venues=True, allow_preprints=True)
+    return QUALITY_FILTER(normalized, strict_target_venues=strict_target_venues, allow_preprints=True)
 
 
 def make_bibtex_key(paper: dict) -> str:
@@ -210,6 +210,7 @@ def main():
     parser.add_argument("--api-key", default="", help="Semantic Scholar API key")
     parser.add_argument("--dry-run", action="store_true", help="Only show claims, don't search")
     parser.add_argument("--verbose", action="store_true", help="Print detailed progress")
+    parser.add_argument("--strict-target-venues", action="store_true", help="Keep only target-venue citations; default keeps high-quality bridge papers")
     args = parser.parse_args()
 
     with open(args.tex, encoding="utf-8", errors="replace") as f:
@@ -244,7 +245,7 @@ def main():
     for i, claim in enumerate(claims[:rounds]):
         print(f"\n[{i+1}/{rounds}] Searching for: {claim['query'][:60]}...", file=sys.stderr)
         raw_papers = search_semantic_scholar(claim["query"], limit=3, api_key=args.api_key)
-        papers, quality_report = apply_quality_filter(raw_papers)
+        papers, quality_report = apply_quality_filter(raw_papers, strict_target_venues=args.strict_target_venues)
         time.sleep(1)  # Rate limiting
 
         if not raw_papers:

@@ -24,13 +24,14 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 
 - Survey prompts (outline, writing, citation, coherence): `${CODEX_HOME:-$HOME/.codex}/skills/survey-generation/references/survey-prompts.md`
 - Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow (from AutoSurvey)
 
 ### Step 1: Collect Papers
 1. Search Semantic Scholar / arXiv for papers on the topic
 2. Merge raw results to `merged_raw.jsonl`
-3. Apply `filter_publications.py` with `--strict-target-venues --allow-preprints`
+3. Apply `filter_publications.py` with `--allow-preprints`; add `--strict-target-venues` only for target-venue-only surveys
 4. Collect 50-200 filtered relevant papers with titles and abstracts
 5. Filter by relevance, citation count, and `priority_tier`
 
@@ -85,6 +86,7 @@ survey/
 - Citation validation is mandatory before final output
 - Local coherence enhancement must preserve all citations
 - The survey should be comprehensive and logically organized
+- For a survey supporting an original paper, end each major outline/writing round with the convergence closure block and avoid adding themes that do not support the stable kernel
 
 ## Related Skills
 - Upstream: [deep-research](../deep-research/), [literature-search](../literature-search/), [literature-review](../literature-review/)

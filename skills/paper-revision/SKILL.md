@@ -16,20 +16,23 @@ Systematically revise papers based on reviewer feedback.
 ## References
 
 - Revision workflow and prompts: `${CODEX_HOME:-$HOME/.codex}/skills/paper-revision/references/revision-prompts.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow
 
 ### Step 1: Parse and Prioritize Concerns
 For each reviewer comment:
 1. Extract the specific concern
-2. Classify: major revision, minor revision, question, suggestion
+2. Classify: solved, partially solved, still open, major revision, minor revision, question, suggestion
 3. Map to affected paper section(s)
 4. Prioritize: address major concerns first
+5. Map the concern to the evidence matrix and selected venue profile
 
 ### Step 2: Plan Revisions
 Create a revision plan:
 ```
-Concern → Affected Section → Required Action → New Content/Experiment
+Concern → Status → Affected Section → Evidence Gap → Required Action → New Content/Experiment
 ```
 
 Categories of actions:
@@ -58,15 +61,18 @@ Generate a diff summary:
 - List all changes made with section references
 - Note any new experiments, figures, or tables added
 - Cross-reference each change to the reviewer concern it addresses
+- End with the closure block from the venue writing policy so the revision state has a stable resolved/open boundary
 
 ## Rules
 
 - Address EVERY reviewer concern — do not skip any
+- Separate solved, partially solved, and still open concerns explicitly
 - Preserve paper structure unless structural change is explicitly needed
 - New results must come from actual experiments, not hallucinated
 - Mark all revised text clearly for the reviewers
 - Keep a copy of the previous version before revising
 - Compare new scores vs previous scores after revision
+- Do not weaken supported claims out of caution; narrow only claims that exceed the evidence matrix
 
 ## Related Skills
 - Upstream: [self-review](../self-review/)

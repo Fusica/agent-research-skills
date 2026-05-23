@@ -15,6 +15,8 @@ Make every number in the final PDF hyperlink back to the exact code line that pr
 ## References
 
 - Traceability patterns and LaTeX commands: `${CODEX_HOME:-$HOME/.codex}/skills/backward-traceability/references/traceability-patterns.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Scripts
 
@@ -78,6 +80,9 @@ Create an appendix with the full code listing, with `\hypertarget` anchors at re
 - Every number in the paper text must have a corresponding `\hypertarget` in the code
 - Every `\num{}` formula must evaluate correctly
 - Click-test: every hyperlink in the PDF must jump to the correct code line
+- Every number should map to an evidence-matrix claim, table, figure, or bounded limitation
+- Prioritize numbers that support the stable kernel and selected paper route / venue hypothesis; flag numbers that widen claims beyond the frozen scope
+- End major traceability passes with a convergence closure: stable kernel and evidence rows represented, numbers flagged or omitted for scope widening, bounded remaining issues, freeze criteria, and the next verification or narrowing step
 
 ## LaTeX Setup
 
@@ -94,6 +99,7 @@ Required packages:
 - Use `\num{}` for any derived/computed values
 - Code listing in appendix must match actual executed code
 - Verify all hyperlinks resolve correctly after compilation
+- Preserve protocol metadata with each result: dataset/split, seed/trial/context, hardware, detector/model/prompt, and metric definition when relevant
 
 ## Related Skills
 - Upstream: [experiment-code](../experiment-code/), [data-analysis](../data-analysis/)

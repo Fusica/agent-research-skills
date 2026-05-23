@@ -37,12 +37,14 @@ Key flags: `--format text`, `--verbose`
 - If PDF: use `extract_pdf_text.py` to extract text
 - If `.tex`: read the LaTeX source directly
 
-### Step 2: Three-Persona Review
-Run three independent reviews using different personas (from `references/review-form.md`):
+### Step 2: Select Venue-Aware Reviewer Personas
+Read the venue writing policy and choose personas that match the paper route. Use three independent reviews, mixing general and venue-specific personas:
 
-1. **Harsh but fair reviewer**: Expects good experiments that lead to insights
-2. **Harsh and critical reviewer**: Looking for impactful ideas in the field
-3. **Open-minded reviewer**: Looking for novel ideas not proposed before
+1. **CV/benchmark reviewer**: Checks protocol fairness, baselines, metrics, ablations, qualitative evidence
+2. **Robotics systems reviewer**: Checks task relevance, assumptions, runtime, deployment, robustness, autonomy linkage
+3. **ML/AI reviewer**: Checks learning formulation, abstraction, generalization, and controlled evidence
+4. **Journal reviewer**: Checks completeness, clarity, reproducibility, and whether claims are fully supported
+5. **Open-minded bridge reviewer**: Checks LLM/VLM/foundation-model or embodied-AI connections without over-penalizing nontraditional scope
 
 For each persona, generate a review following the NeurIPS review JSON format in `references/review-form.md`.
 
@@ -85,15 +87,29 @@ Output format:
 | Overall | ... | ... | ... | ... |
 | Contribution | ... | ... | ... | ... |
 | ... | ... | ... | ... | ... |
+
+## Closure
+Current Stable Kernel:
+Venue/Writing Profile:
+Evidence Coverage:
+Open But Bounded Questions:
+Decision Log:
+Freeze Criteria:
+Next Narrowing Step:
 ```
 
 ## References
 
 - NeurIPS review form, scoring weights, personas, reflection prompts: `${CODEX_HOME:-$HOME/.codex}/skills/self-review/references/review-form.md`
 - PDF text extraction: `${CODEX_HOME:-$HOME/.codex}/skills/self-review/scripts/extract_pdf_text.py`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Missing Sections Check
 You MUST verify that all required sections are present: Abstract, Introduction, Methods/Approach, Experiments/Results, Discussion/Conclusion. Reduce scores if any are missing.
+
+## Evidence and Scope Check
+Verify that each major claim maps to the evidence matrix and selected venue profile. Flag unsupported generalization, deployment, zero-shot, runtime, or broad autonomy claims. End the report with the closure block from the venue writing policy, including the remaining bounded questions.
 
 ## Related Skills
 - Upstream: [paper-compilation](../paper-compilation/)

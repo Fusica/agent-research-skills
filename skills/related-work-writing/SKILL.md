@@ -17,6 +17,8 @@ Generate publication-quality Related Work sections with proper citations and the
 
 - Related work writing prompts and strategies: `${CODEX_HOME:-$HOME/.codex}/skills/related-work-writing/references/related-work-prompts.md`
 - Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow
 
@@ -24,6 +26,7 @@ Generate publication-quality Related Work sections with proper citations and the
 - Read the current paper draft (especially Methods and Introduction)
 - Identify the key contributions and novelty claims
 - List the technical components that need literature context
+- Identify the paper route and venue hypothesis so the related work narrows toward the selected submission profile
 
 ### Step 2: Organize Literature by Theme
 Before grouping papers, verify the collected literature came from filtered `paper_db.jsonl`, `quality_filter_report.json`, or filtered citation results. Do not use excluded papers as evidence.
@@ -32,6 +35,7 @@ Group related papers into thematic clusters:
 - Each cluster should represent a research direction or technique
 - Common themes: problem formulation, methodology family, application domain, evaluation approach
 - Order themes from most to least relevant to your work
+- Keep LLM/VLM, embodied AI, CV, RL, and robotics bridge work when it explains the stable kernel; exclude it only when it has no measurable connection to the paper claim
 
 ### Step 3: Write Each Theme Paragraph
 For each thematic group:
@@ -45,6 +49,7 @@ For each thematic group:
 - Check that your work's novelty is clear from the comparisons
 - Verify all `\cite{}` keys exist in the `.bib` file
 - Aim for 1-2 pages (single column) or 0.5-1 page (double column)
+- End with the full venue-writing closure block: Current Stable Kernel, Venue/Writing Profile, Evidence Coverage, Open But Bounded Questions, Decision Log, Freeze Criteria, Next Narrowing Step
 
 ## Rules
 
@@ -56,6 +61,7 @@ For each thematic group:
 - **Explain inapplicability** — If a method could apply to your setting, explain why you don't compare experimentally, or add it to experiments
 - **Use present tense for established facts** — "Smith et al. propose..." or "This approach uses..."
 - **End with positioning** — The final paragraph should clearly position your work relative to all discussed prior work
+- **Do not reopen scope** — Once the selected venue profile is stable, do not add new themes unless they change novelty, baseline fairness, or reviewer risk
 
 ## Related Skills
 - Upstream: [literature-search](../literature-search/), [literature-review](../literature-review/), [citation-management](../citation-management/)

@@ -47,6 +47,7 @@ Runs checks then applies clean_latex.py fixes, writing to `main_fixed.tex`.
 ## References
 
 - Venue specs, project structure, packages, commands: `${CODEX_HOME:-$HOME/.codex}/skills/latex-formatting/references/venue-templates.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
 
 ## Action: `setup`
 Create the project directory structure and main.tex for the specified venue. Use the template from `references/venue-templates.md`.
@@ -56,6 +57,8 @@ Fix common LaTeX issues: unescaped special chars, math mode errors, float placem
 
 ## Action: `check`
 Run `latex_checker.py` for pre-submission validation. Check page count, anonymization, required sections, TODO markers.
+Also check that the stable kernel / paper route / venue hypothesis / selected venue profile / evidence matrix matches the template, page limits, anonymity rules, figure/table placement, and required sections. Warn when the template implies a submission type that the current evidence does not support.
+End major formatting or pre-submission passes with a closure: stable kernel and evidence matrix still represented, venue/template fit, unresolved formatting risks, freeze criteria, and next verification step.
 
 ## Related Skills
 - Upstream: [paper-writing-section](../paper-writing-section/), [table-generation](../table-generation/)

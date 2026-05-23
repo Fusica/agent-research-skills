@@ -48,6 +48,17 @@ If improvements needed: generate corrective instructions and re-execute.
 
 - All MatPlotAgent prompts: `${CODEX_HOME:-$HOME/.codex}/skills/figure-generation/references/figure-prompts.md`
 - Figure templates: `${CODEX_HOME:-$HOME/.codex}/skills/figure-generation/scripts/figure_template.py`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+
+## Venue-Aware Figure Selection
+
+Choose figures from the evidence matrix:
+- Method/pipeline figure: show the stable kernel and paper route, not every implementation detail
+- Quantitative plot: use when trends, robustness, sensitivity, or runtime tradeoffs matter more than raw table values
+- Qualitative CV/robotics figure: show real inputs, outputs, failure modes, and protocol-relevant conditions
+- LLM/VLM/embodied figure: show grounding, model interface, action/perception loop, or task outcome
+- Failure-case panel: include when it bounds claims or addresses reviewer risk
 
 ## Output
 
@@ -68,6 +79,9 @@ Both PNG (preview, 300 DPI) and PDF (vector, for paper) formats. Plus the LaTeX 
 - All text ≥ 8pt at print size
 - Consistent styling across all paper figures
 - No matplotlib default title — use LaTeX caption
+- Every figure must support a claim, clarify the method/protocol, or address a venue/reviewer risk
+- Captions should state what the figure proves and its boundary conditions
+- End major figure-generation rounds with the closure block from the venue writing policy
 
 ## Related Skills
 - Upstream: [data-analysis](../data-analysis/), [experiment-code](../experiment-code/)

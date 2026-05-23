@@ -199,6 +199,65 @@ def check_figures(base_dir: str) -> dict:
     }
 
 
+def check_convergence_state(base_dir: str) -> dict:
+    """Find saved convergence state in common planning/checkpoint artifacts."""
+    candidate_patterns = [
+        "convergence_state.json",
+        "checkpoint.json",
+        "research_plan.json",
+        "experiment_design.json",
+        "**/convergence_state.json",
+        "**/checkpoint.json",
+        "**/research_plan.json",
+        "**/experiment_design.json",
+    ]
+    required = [
+        "current_stable_kernel",
+        "open_but_bounded_questions",
+        "decision_log",
+        "freeze_criteria",
+        "next_narrowing_step",
+    ]
+    default_state = {
+        "current_stable_kernel": "",
+        "open_but_bounded_questions": [],
+        "decision_log": [],
+        "freeze_criteria": "",
+        "next_narrowing_step": "Create or update convergence_state before widening the paper scope.",
+    }
+    candidates = []
+    for pattern in candidate_patterns:
+        candidates.extend(glob.glob(os.path.join(base_dir, pattern), recursive=True))
+
+    for path in sorted(set(candidates)):
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            continue
+        state = data.get("convergence_state") if isinstance(data, dict) else None
+        if not isinstance(state, dict):
+            continue
+        missing = [key for key in required if key not in state]
+        normalized = dict(default_state)
+        normalized.update(state)
+        normalized.update(
+            found=True,
+            source=os.path.relpath(path, base_dir),
+            complete=not missing,
+            missing_fields=missing,
+        )
+        return normalized
+
+    return {
+        **default_state,
+        "found": False,
+        "source": None,
+        "complete": False,
+        "missing_fields": required,
+    }
+
+
 def suggest_next_steps(phase_status: dict) -> list[str]:
     """Suggest next steps based on pipeline status."""
     steps = []
@@ -254,7 +313,10 @@ def main():
     section_info = check_tex_sections(args.dir)
     citation_info = check_citations(args.dir)
     figure_info = check_figures(args.dir)
+    convergence_info = check_convergence_state(args.dir)
     next_steps = suggest_next_steps(phase_status)
+    if not convergence_info["complete"]:
+        next_steps.insert(0, "Update convergence_state: stable kernel, bounded questions, decision log, freeze criteria, next narrowing step")
 
     report = {
         "directory": os.path.abspath(args.dir),
@@ -265,6 +327,7 @@ def main():
         "sections": section_info,
         "citations": citation_info,
         "figures": figure_info,
+        "convergence_state": convergence_info,
         "next_steps": next_steps,
     }
 
@@ -285,6 +348,8 @@ def main():
         print(f"  Missing citations: {len(citation_info['missing'])}")
     if figure_info["missing"]:
         print(f"  Missing figures: {', '.join(figure_info['missing'])}")
+    if not convergence_info["complete"]:
+        print("  Convergence state: missing or incomplete")
 
     if next_steps:
         print(f"\n  Next steps:")

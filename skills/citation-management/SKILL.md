@@ -43,9 +43,9 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publicati
   --input candidates_raw.jsonl \
   --output candidates_filtered.jsonl \
   --report quality_filter_report.json \
-  --strict-target-venues \
   --allow-preprints
 ```
+Use `--strict-target-venues` only when the user asks for target-venue-only citation candidates. Otherwise, hard-block low-quality sources and rank by venue tier/relevance.
 
 ### Harvest missing citations automatically
 ```bash
@@ -84,6 +84,8 @@ Based on AI-Scientist's 20-round citation harvesting loop. For each round:
 - Never add MDPI, blocked low-quality venues, or predatory-publisher matches as citations
 - Cite broadly — not just popular papers
 - Do not copy verbatim from prior literature
+- Tag each added citation by purpose when possible: core related work, bridge method, baseline, dataset/protocol, background, or reviewer-requested
+- Do not add citations that widen the paper after writing lock unless they resolve a bounded open question or reviewer risk
 
 ## Action: `validate` — Pre-Compilation Check
 

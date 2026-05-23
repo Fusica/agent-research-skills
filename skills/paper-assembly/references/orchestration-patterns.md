@@ -190,6 +190,13 @@ for phase in PHASES:
     "figures": ["Figure_1.png", "Figure_2.png"],
     "tables": ["table_comparison.tex"],
     "main_tex": "main.tex"
+  },
+  "convergence_state": {
+    "current_stable_kernel": "The stable paper core that should not be reopened without new evidence.",
+    "open_but_bounded_questions": ["Questions that can change the next concrete decision."],
+    "decision_log": ["Decisions added, removed, or frozen in this checkpoint."],
+    "freeze_criteria": "Condition for stopping exploration and writing to the selected venue profile.",
+    "next_narrowing_step": "Exactly one next decision or experiment."
   }
 }
 ```

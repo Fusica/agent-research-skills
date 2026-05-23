@@ -1,23 +1,22 @@
-# Venue Quality Policy for UAV/CV/Robotics/RL Research
+# Venue Quality Policy for ML/Robotics/CV/RL/Embodied AI/LLM-VLM Research
 
-This policy is a user-defined search and review filter. Its purpose is to keep literature search focused on reputable venues for UAV, computer vision, robotics, and reinforcement learning work. It is not a legal or universal classification of publishers.
+This policy is a user-defined search and review filter. Its purpose is to keep literature search focused on reputable venues for ML, robotics, computer vision, reinforcement learning, embodied AI, and LLM/VLM bridge work. It is not a legal or universal classification of publishers.
 
 ## Core Rule
 
 Exclude all MDPI venues and all records matching the hard blacklist before using papers for deep research, literature search, literature review, novelty assessment, or related work writing.
 
-When quality matters more than recall, use strict target-venue filtering:
+Default filtering hard-blocks low-quality/predatory sources and uses target venues as priority/ranking signals:
 
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
   --input merged.jsonl \
   --output filtered.jsonl \
   --report quality_filter_report.json \
-  --strict-target-venues \
   --allow-preprints
 ```
 
-`--strict-target-venues` keeps only papers from the target venue lists below plus arXiv/preprints when `--allow-preprints` is set.
+Use `--strict-target-venues` only when the user explicitly asks for target-venue-only results. In normal exploration, keep high-quality bridge papers in ML/robotics/CV/RL/embodied AI/LLM-VLM work and rank them below core target venues when relevance is similar.
 
 ## Target Venues
 

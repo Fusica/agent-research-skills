@@ -16,6 +16,7 @@ Systematically debug experiment code with structured error categorization and fi
 ## References
 
 - Debug patterns and state machine: `${CODEX_HOME:-$HOME/.codex}/skills/code-debugging/references/debug-patterns.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow
 
@@ -39,6 +40,10 @@ Systematically debug experiment code with structured error categorization and fi
    - Missing data normalization
    - Off-by-one errors in indexing
    - Incorrect loss function for task type
+   - Data leakage across train/val/test, sequences, scenes, subjects, or environments
+   - Coordinate-frame, unit, pose-convention, timestamp, or frame-order mismatch
+   - Baseline/protocol unfairness from detector, prompt/model, hardware, or split differences
+   - Wrong aggregation over seeds, trials, episodes, scenes, or prompt runs
 
 ### Step 3: Apply Fix Strategy
 
@@ -70,6 +75,8 @@ Stage 2 (third attempt) → regenerate from scratch if still failing
 - After fixing, verify the fix doesn't introduce new errors
 - Keep error history to avoid repeating the same mistakes
 - If 0% accuracy: check accuracy calculation first, then check data pipeline
+- Before changing protocol, metrics, hardware, prompts, detector, split, or aggregation, check the stable kernel, paper route, venue hypothesis, and evidence-matrix claim; do not silently change the experimental protocol to make the error disappear
+- After fixing result-affecting bugs, add a short closure: evidence claim still supported or weakened, protocol changes made, bounded remaining risks, and the next verification step
 
 ## Related Skills
 - Upstream: [experiment-code](../experiment-code/)

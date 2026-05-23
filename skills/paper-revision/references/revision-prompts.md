@@ -9,6 +9,9 @@ For each reviewer comment, classify as:
 
 | Type | Description | Priority |
 |------|-------------|----------|
+| Solved | Already addressed with clear manuscript evidence | P0 evidence check |
+| Partially Solved | Addressed in part; needs bounded edit, result, or response | P0/P1 |
+| Still Open | No adequate evidence or text yet | P0/P1 |
 | Major Revision | Fundamental flaw, missing experiment, wrong methodology | P0 |
 | Minor Revision | Clarity issues, missing details, presentation | P1 |
 | Question | Reviewer seeks clarification | P2 |
@@ -21,8 +24,10 @@ For each reviewer comment, classify as:
 For each concern:
 
 Concern: [Extracted reviewer concern]
+Status: [Solved/Partially Solved/Still Open]
 Type: [Major/Minor/Question/Suggestion]
 Affected Section(s): [Section name(s)]
+Evidence Gap: [section/table/figure/experiment needed, or none]
 Required Action: [Clarification/Experiment/Analysis/Structural/Citation]
 Plan:
   - Step 1: ...
@@ -113,6 +118,8 @@ After all revisions:
 [ ] All new citations are in .bib file
 [ ] Self-review score improved or maintained
 [ ] Revision summary cross-references every concern
+[ ] Claims are narrowed only where they exceed the evidence matrix
+[ ] Closure block records Current Stable Kernel, Venue/Writing Profile, Evidence Coverage, Open But Bounded Questions, Decision Log, Freeze Criteria, and Next Narrowing Step
 ```
 
 ## Revision Summary Template
@@ -142,4 +149,13 @@ After all revisions:
 | Overall | 5 | 7 |
 | Clarity | 6 | 8 |
 | ...    | ... | ... |
+
+## Closure
+Current Stable Kernel:
+Venue/Writing Profile:
+Evidence Coverage:
+Open But Bounded Questions:
+Decision Log:
+Freeze Criteria:
+Next Narrowing Step:
 ```

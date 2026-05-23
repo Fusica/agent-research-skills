@@ -18,6 +18,7 @@ Conduct deep literature reviews through multi-perspective dialogue and systemati
 - Multi-perspective dialogue prompts (STORM): `${CODEX_HOME:-$HOME/.codex}/skills/literature-review/references/dialogue-prompts.md`
 - Literature review workflow (AgentLaboratory): `${CODEX_HOME:-$HOME/.codex}/skills/literature-review/references/review-workflow.md`
 - Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Scripts (from literature-search skill)
 
@@ -36,9 +37,9 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publicati
   --input merged_raw.jsonl \
   --output merged.jsonl \
   --report quality_filter_report.json \
-  --strict-target-venues \
   --allow-preprints
 ```
+Add `--strict-target-venues` only when the user requests a target-venue-only review.
 
 ## Workflow
 
@@ -64,11 +65,13 @@ For each persona, simulate a multi-turn Q&A conversation:
 - Remove redundancy across personas
 - Organize by theme/subtopic
 - Generate an outline based on the collected information
+- Preserve bridge themes such as LLM/VLM, embodied AI, CV, RL, and robotics when they explain the stable kernel
 
 ### Step 4: Generate Literature Review
 - Write a structured review organized by the generated outline
 - Every claim must be supported by a citation
 - Include a summary table of key papers (method, contribution, limitations)
+- End iterative review rounds with the convergence closure block if the review feeds idea generation, novelty assessment, or paper planning
 
 ## Output
 
@@ -86,6 +89,7 @@ A structured literature review with:
 - Cite broadly — cover diverse approaches, not just the most popular
 - Include recent papers (last 2-3 years) alongside foundational work
 - Use inline citations: "Smith et al. [1] propose..."
+- Hard quality filters remove low-quality sources; target venue tiers guide priority rather than excluding high-quality bridge papers unless the user asks for strict filtering
 
 ## Related Skills
 - Upstream: [literature-search](../literature-search/), [deep-research](../deep-research/)

@@ -51,6 +51,8 @@ Run `validate_citations.py` to catch issues before compiling:
 - Every `\cite{key}` has a matching `.bib` entry
 - Every `\includegraphics{file}` exists
 - No duplicate labels or sections
+If a venue profile exists, confirm the compiled artifact is being checked against the intended template/page/anonymity expectations.
+When available, also confirm the stable kernel, paper route, venue hypothesis, and evidence matrix are still represented by the compiled artifact.
 
 ### Step 2: Compile
 Run `compile_paper.py` which executes: `pdflatex → bibtex → pdflatex → pdflatex`
@@ -67,6 +69,8 @@ Apply minimal fixes. Do not remove packages unnecessarily. Recompile after each 
 
 ### Step 4: Post-Compilation Report
 Check: page count vs venue limit, remaining warnings, chktex style issues.
+Mention any compile-time issue that could affect evidence presentation, such as missing figures/tables, broken hyperlinks for traceability, or unresolved claim-support references.
+End with a submission-readiness closure: stable kernel status, venue/template status, route and venue-hypothesis fit, evidence-matrix presentation status, bounded remaining issues, freeze criteria, and the next narrowing step.
 
 ## Troubleshooting
 

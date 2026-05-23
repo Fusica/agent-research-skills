@@ -49,6 +49,13 @@ Keep the architecture simple and make effective use of open-source libraries.
     "File list": ["main.py", "model.py", "trainer.py", "evaluation.py"],
     "Data structures and interfaces": "classDiagram\n    class Main { ... }\n    class Model { ... }\n    Main --> Model\n",
     "Program call flow": "sequenceDiagram\n    participant M as Main\n    M->>DL: load_data()\n    ...\n",
+    "convergence_state": {
+        "current_stable_kernel": "...",
+        "open_but_bounded_questions": ["..."],
+        "decision_log": ["..."],
+        "freeze_criteria": "...",
+        "next_narrowing_step": "..."
+    },
     "Anything UNCLEAR": "Need clarification on ..."
 }
 ```
@@ -69,6 +76,13 @@ Break down tasks according to the technical design, generate a task list, and an
     ],
     "Task list": ["dataset_loader.py", "model.py", "trainer.py", "evaluation.py", "main.py"],
     "Shared Knowledge": "Both trainer.py and evaluation.py share the model forward pass...",
+    "convergence_state": {
+        "current_stable_kernel": "...",
+        "open_but_bounded_questions": ["..."],
+        "decision_log": ["..."],
+        "freeze_criteria": "...",
+        "next_narrowing_step": "..."
+    },
     "Anything UNCLEAR": "..."
 }
 ```
@@ -130,6 +144,13 @@ REQUIREMENTS:
         "read_data": "...",
         "data_preprocessing": "...",
         "data_dataloader": "..."
+    },
+    "convergence_state": {
+        "current_stable_kernel": "...",
+        "open_but_bounded_questions": ["..."],
+        "decision_log": ["..."],
+        "freeze_criteria": "...",
+        "next_narrowing_step": "..."
     }
 }
 ```
@@ -141,7 +162,14 @@ REQUIREMENTS:
     "loss_function": "...",
     "optimizer": "...",
     "training_configurations": "...",
-    "monitor_and_logging": "..."
+    "monitor_and_logging": "...",
+    "convergence_state": {
+        "current_stable_kernel": "...",
+        "open_but_bounded_questions": ["..."],
+        "decision_log": ["..."],
+        "freeze_criteria": "...",
+        "next_narrowing_step": "..."
+    }
 }
 ```
 
@@ -150,7 +178,14 @@ REQUIREMENTS:
 {
     "test_metric": "...",
     "test_data": "...",
-    "test_function": "..."
+    "test_function": "...",
+    "convergence_state": {
+        "current_stable_kernel": "...",
+        "open_but_bounded_questions": ["..."],
+        "decision_log": ["..."],
+        "freeze_criteria": "...",
+        "next_narrowing_step": "..."
+    }
 }
 ```
 
@@ -178,6 +213,9 @@ You are a PhD student being directed by a postdoc who will help you come up with
 - `DIALOGUE` — Continue the planning conversation
 - `PLAN` — Submit the final plan (ends the dialogue)
 
+Use `PLAN` instead of `DIALOGUE` once the stable kernel, paper route, venue
+hypothesis, and evidence matrix are clear enough to start implementation.
+
 ### Plan Submission Format
 ```
 ```PLAN
@@ -185,6 +223,8 @@ You are a PhD student being directed by a postdoc who will help you come up with
 - Machine learning models to use and implement
 - Datasets to search for and use
 - Exact experiment details
-- Evaluation metrics and success criteria]
+- Evaluation metrics and success criteria
+- convergence_state with current_stable_kernel, open_but_bounded_questions,
+  decision_log, freeze_criteria, and next_narrowing_step]
 ```
 ```

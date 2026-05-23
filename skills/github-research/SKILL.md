@@ -26,6 +26,8 @@ This skill systematically discovers, evaluates, and deeply analyzes GitHub repos
 ## Publication Quality Dependency
 
 When using paper titles or arXiv IDs to discover repositories, only use papers from a `paper_db.jsonl` that has passed `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py`. Do not use MDPI, blocked low-quality venues, or predatory-publisher matches to seed Papers With Code or paper-to-repo lookups.
+If a stable kernel, paper route, or evidence matrix exists, rank repositories by their ability to support the needed claims, baselines, protocols, datasets, or reproducibility gaps. Do not expand the code search into unrelated repo ecosystems.
+Use `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md` when GitHub research feeds idea refinement or experiment planning.
 
 ## 6-Phase Pipeline
 
@@ -214,6 +216,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
    - Direct relevance to research topic
    - Implementation completeness
    - Code quality signals (from README, description)
+   - License, pretrained weights/checkpoints, dataset scripts, benchmark/evaluation scripts, active maintenance, and protocol compatibility with the evidence matrix
    - Update the relevance scores:
    ```bash
    python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py tag \
@@ -400,8 +403,9 @@ Do NOT just summarize READMEs. You must:
 5. **Checkpoint recovery**: Can resume from any phase by checking what outputs exist
 6. **All scripts are stdlib-only Python** — no pip installs needed
 7. **`gh` CLI is required** for GitHub API access (must be authenticated)
-8. **Deduplication** by `repo_id` (owner/name) across all searches
-9. **Rate limit awareness**: Respect GitHub search API limits (30 req/min)
+8. **Final closure**: End major repo-search rounds with Current Stable Kernel, repo roles (core / bridge / baseline / background), bounded open questions, freeze criteria, and next narrowing step.
+9. **Deduplication** by `repo_id` (owner/name) across all searches
+10. **Rate limit awareness**: Respect GitHub search API limits (30 req/min)
 
 ## Error Handling
 

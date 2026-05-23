@@ -80,11 +80,12 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publicati
   --input merged_raw.jsonl \
   --output paper_db.jsonl \
   --report quality_filter_report.json \
-  --strict-target-venues \
   --allow-preprints
 ```
 
 See `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` for target venues and blacklist rules. If a blocked record looks important, mention it only as "excluded by user quality policy"; do not use it as evidence.
+For open exploration, treat target venues as priority/ranking signals unless the user explicitly requests strict venue filtering. Keep LLM/VLM, embodied AI, CV, RL, and robotics bridge papers when they are high quality and relevant to the stable kernel.
+When deep research is part of a paper pipeline, also load `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md` and end Phase 5/6 with the convergence closure block.
 
 ## Search Tools (by priority)
 
@@ -151,7 +152,7 @@ Build a comprehensive landscape with broader time range. Target **35-80 papers**
 1. Write `phase2_survey/paper_finder_config.yaml` covering 2023-2025
 2. Run paper_finder + Semantic Scholar + arXiv
 3. Merge all results to `merged_raw.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge`
-4. Apply venue quality filter to create `paper_db.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py --input merged_raw.jsonl --output paper_db.jsonl --report quality_filter_report.json --strict-target-venues --allow-preprints`
+4. Apply venue quality filter to create `paper_db.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py --input merged_raw.jsonl --output paper_db.jsonl --report quality_filter_report.json --allow-preprints`. Add `--strict-target-venues` only when the user asks to restrict results to the target venue list.
 5. Filter to 35-80 most relevant if needed: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter --min-score 0.80 --max-papers 70`
 6. Cluster by theme, write survey notes
 → Output: `phase2_survey/survey.md`, `phase2_survey/search_results/`, `paper_db.jsonl`
@@ -248,7 +249,7 @@ output/{topic-slug}/
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/workflow-phases.md` — Detailed 6-phase methodology
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/note-format.md` — Note templates, BibTeX format, report structure
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/api-reference.md` — arXiv, Semantic Scholar, ar5iv API guide
-- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` — UAV/CV/robotics/RL target venues and quality blacklist
+- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` — ML/robotics/CV/RL/embodied AI/LLM-VLM target venues and quality blacklist
 
 ## Related Skills
 - Downstream: [literature-search](../literature-search/), [literature-review](../literature-review/), [citation-management](../citation-management/)

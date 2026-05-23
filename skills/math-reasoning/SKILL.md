@@ -37,6 +37,8 @@ Verify: dimensional consistency, boundary cases, gradient computations, notation
 
 - Standard ML notation + statistical tests: `${CODEX_HOME:-$HOME/.codex}/skills/math-reasoning/references/notation-guide.md`
 - Proof templates and theorem environments: `${CODEX_HOME:-$HOME/.codex}/skills/math-reasoning/references/proof-templates.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Rules
 
@@ -46,6 +48,10 @@ Verify: dimensional consistency, boundary cases, gradient computations, notation
 - Use `\tag{reason}` for key derivation steps
 - State assumptions explicitly
 - Cite lemmas and prior results used in proofs
+- When available, check the stable kernel, paper route, venue hypothesis, and evidence matrix before choosing notation or claim strength
+- Match formalism to the paper route: CV/pose notation, robotics state/action/system assumptions, RL objectives, embodied AI interfaces, or LLM/VLM grounding interfaces as appropriate
+- Do not overstate theory. If the math is a rationale or consistency argument rather than a theorem, label it as such and keep claims within the evidence matrix and venue hypothesis
+- End major formalization rounds with the venue-writing closure block when the math affects writing or venue positioning
 
 ## Related Skills
 - Upstream: [research-planning](../research-planning/)

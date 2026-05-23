@@ -15,6 +15,8 @@ Formalize methods into algorithm pseudocode and system architecture diagrams.
 ## References
 
 - Algorithm and diagram templates: `${CODEX_HOME:-$HOME/.codex}/skills/algorithm-design/references/algorithm-templates.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow
 
@@ -69,6 +71,7 @@ sequenceDiagram
 - Every pseudocode step must map to a code module
 - Every class in the UML must exist in the implementation
 - Parameter names must match between pseudocode and code
+- Every algorithm input/output must match the stable kernel, paper route, venue hypothesis, and evidence matrix: dataset sample, robot state, observation history, prompt/model interface, or action/control output
 
 ## Rules
 
@@ -77,6 +80,8 @@ sequenceDiagram
 - Include complexity analysis as a comment or proposition
 - Use `\Require` / `\Ensure` for inputs/outputs
 - Keep pseudocode at the right abstraction level — not too detailed, not too vague
+- For online robotics/CV/RL systems, specify time index, state/history buffer, coordinate frames, and inference-time assumptions when they affect claims
+- End major algorithm-design rounds with the venue-writing closure block when the pseudocode will enter the paper
 
 ## Related Skills
 - Upstream: [atomic-decomposition](../atomic-decomposition/), [math-reasoning](../math-reasoning/)

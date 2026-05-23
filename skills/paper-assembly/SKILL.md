@@ -15,6 +15,7 @@ Orchestrate the entire paper pipeline end-to-end with state management and check
 ## References
 
 - Orchestration patterns and state management: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/orchestration-patterns.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Scripts
 
@@ -39,9 +40,9 @@ Run phases in dependency order:
 | Phase | Skill | Input | Output |
 |-------|-------|-------|--------|
 | 1. Literature | literature-search, literature-review | Topic | Filtered knowledge base, quality_filter_report.json, BibTeX |
-| 2. Planning | research-planning | Knowledge base | Paper structure, task list |
+| 2. Planning | research-planning | Knowledge base | Stable kernel, paper route, venue hypothesis, paper structure, task list |
 | 3. Code | experiment-code | Plan | Training/eval pipeline |
-| 4. Experiments | experiment-design | Code | Results JSON/CSV |
+| 4. Experiments | experiment-design | Code | Evidence matrix, Results JSON/CSV |
 | 5. Figures | figure-generation | Results | PNG figures |
 | 6. Tables | table-generation | Results | LaTeX tables |
 | 7. Writing | paper-writing-section | All above | main.tex sections |
@@ -55,6 +56,7 @@ After each phase completes:
 1. Save output artifacts to the paper directory
 2. Propagate results to downstream phases
 3. Update the progress checkpoint file
+4. Update the convergence state: stable kernel, bounded questions, decision log, freeze criteria, and next narrowing step
 
 ### Step 4: Quality Gates
 Before proceeding to the next phase:
@@ -62,6 +64,9 @@ Before proceeding to the next phase:
 - For literature/citation phases, verify `quality_filter_report.json` exists or confirm the source is a filtered `paper_db.jsonl`
 - Check for consistency (e.g., all cited keys in .bib)
 - Validate figures/tables match experimental results
+- Verify the current paper route and venue hypothesis are explicit before experiment design
+- Verify every major claim has evidence planned before writing begins
+- Once writing lock is reached, do not widen scope unless a fatal evidence or venue-fit problem appears
 
 ### Step 5: Final Assembly
 1. Merge all sections into main.tex
@@ -100,6 +105,15 @@ Human can intervene at any phase boundary for review/correction.
     "code": "experiments/",
     "results": null
   },
+  "convergence_state": {
+    "current_stable_kernel": "...",
+    "paper_route": "CV perception method",
+    "venue_hypothesis": ["CVPR/ICCV/ECCV", "TPAMI/TIP"],
+    "open_but_bounded_questions": ["..."],
+    "decision_log": ["..."],
+    "freeze_criteria": "...",
+    "next_narrowing_step": "..."
+  },
   "last_updated": "2024-01-15T10:30:00Z"
 }
 ```
@@ -112,6 +126,8 @@ Human can intervene at any phase boundary for review/correction.
 - Human review is recommended at phase boundaries
 - All numbers in the paper must trace to actual experiment logs
 - Re-run downstream phases if upstream changes
+- Keep quality filtering hard but scope narrowing evidence-driven
+- Use the closure block after planning, novelty assessment, experiment design, and major writing/revision rounds
 
 ## Related Skills
 - Upstream: all other skills (this is the orchestrator)

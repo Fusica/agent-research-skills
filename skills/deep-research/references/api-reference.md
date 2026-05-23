@@ -221,17 +221,12 @@ Read /path/to/downloaded/paper.pdf
 ```
 This extracts text directly — no scripts needed for individual papers.
 
-### Batch PDF Processing
-For multiple papers, use the scripts:
+### Batch PDF Downloading
+For multiple papers, use the download script, then extract text with the available local PDF tool or parser in the active workspace:
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/download_papers.py \
   --jsonl paper_db.jsonl \
   --output-dir papers/ \
   --max-downloads 20 \
   --sort-by-citations
-
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/pdf_extract.py \
-  --input papers/ \
-  --output-dir texts/ \
-  --sections
 ```

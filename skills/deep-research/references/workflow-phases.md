@@ -45,7 +45,6 @@ Identify the **latest breakthroughs** and trending directions. Understand what t
      --input phase1_frontier/search_results/*.jsonl \
      --output phase1_frontier/frontier_filtered.jsonl \
      --report phase1_frontier/quality_filter_report.json \
-     --strict-target-venues \
      --allow-preprints
    ```
 
@@ -95,16 +94,16 @@ Build a comprehensive landscape. Discover **35-80 relevant papers** spanning rec
      --input merged_raw.jsonl \
      --output paper_db.jsonl \
      --report quality_filter_report.json \
-     --strict-target-venues \
      --allow-preprints
    ```
 
-5. **Filter to 35-80 papers** (critical step):
+   Add `--strict-target-venues` only when the user explicitly requests target-venue-only results. Otherwise use the venue tiers for ranking and keep high-quality bridge work that supports the stable kernel.
+
+5. **Filter to 35-80 papers** (critical step). Choose keywords from the current stable kernel, paper route, and bounded open questions; do not use fixed UAV/drone keywords for unrelated ML/robotics/CV/RL/embodied/LLM-VLM bridge work.
    ```
    python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter \
      --input paper_db.jsonl -o paper_db.jsonl \
-     --min-score 0.80 --max-papers 70 \
-     --keywords uav drone robotics robot vision pose tracking reinforcement navigation
+     --min-score 0.80 --max-papers 70
    ```
 
 6. **Cluster and analyze**: Group by methodology, application domain

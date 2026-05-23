@@ -94,7 +94,7 @@ def normalize_for_quality_filter(paper: dict) -> dict:
 def apply_quality_filter(papers: list[dict]) -> tuple[list[dict], dict]:
     """Apply the user's venue/publisher quality policy to candidate papers."""
     normalized = [normalize_for_quality_filter(paper) for paper in papers]
-    return QUALITY_FILTER(normalized, strict_target_venues=True, allow_preprints=True)
+    return QUALITY_FILTER(normalized, strict_target_venues=False, allow_preprints=True)
 
 
 def format_paper(paper: dict) -> str:
@@ -214,6 +214,9 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
 
     result = {
         "idea": idea,
+        "assessment_status": "evidence_only",
+        "decision": "unclear",
+        "confidence": "low",
         "total_papers_found": len(all_papers_seen),
         "rounds_used": len(queries_used),
         "queries_used": queries_used,
@@ -227,6 +230,20 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
             }
             for p in ranked[:10]
         ],
+        "fatal_risks": [],
+        "experiment_resolvable_risks": [],
+        "venue_positioning_risks": [],
+        "convergence_state": {
+            "current_stable_kernel": idea[:240],
+            "open_but_bounded_questions": [
+                "Decide whether any high-quality result has high or exact overlap with the idea"
+            ],
+            "decision_log": [
+                "Collected quality-filtered novelty evidence; final novelty verdict still requires agent review"
+            ],
+            "freeze_criteria": "Freeze novelty search when the top quality-filtered overlaps are classified and no new query can change the verdict.",
+            "next_narrowing_step": "Classify overlap for the most similar quality-filtered papers and choose novel, incremental, not_novel, or unclear.",
+        },
     }
 
     print("=" * 60)
@@ -239,8 +256,8 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
         print(f"  {i}. [{p.get('year', '?')}] {p.get('title', '?')} "
               f"(citations: {p.get('citationCount', 0)})")
     print()
-    print("NOTE: Review the papers above to determine if your idea is novel.")
-    print("An idea is novel if no paper significantly overlaps with it.")
+    print("NOTE: This script is evidence-only.")
+    print("Review high-quality overlaps, then produce the convergence closure block.")
     print("=" * 60)
 
     return result

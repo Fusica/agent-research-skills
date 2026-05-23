@@ -17,14 +17,16 @@ Generate and iteratively improve ML experiment code for research papers.
 
 - Experiment prompts and patterns: `${CODEX_HOME:-$HOME/.codex}/skills/experiment-code/references/experiment-prompts.md`
 - Code patterns (error handling, repair, hill-climbing): `${CODEX_HOME:-$HOME/.codex}/skills/experiment-code/references/code-patterns.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
 
 ## Action: `generate`
 
 Generate initial experiment code following this structure:
 
-1. **Plan experiments first** — List all runs needed (hyperparameter sweeps, ablations, baselines)
+1. **Plan experiments first** — When available, read the stable kernel, paper route, venue hypothesis, and evidence matrix before deciding runs. List only runs needed by the evidence matrix (main comparison, ablations, baselines, runtime/fairness, robustness).
 2. **Write self-contained code** — All code in project directory, no external imports from reference repos
-3. **Include proper logging** — Save results to JSON, print intermediate metrics
+3. **Include proper logging** — Save results to JSON with config, seed/trial/context, metric, hardware/protocol notes, and claim/evidence IDs
 4. **Generate figures** — At minimum Figure_1.png and Figure_2.png
 
 ### Mandatory Structure
@@ -77,6 +79,10 @@ Generate publication-quality plots from experiment results:
 - Method MUST not get 0% accuracy — verify accuracy calculations
 - Use seeds for reproducibility
 - Before each experiment include a print statement explaining exactly what the results are meant to show
+- Seeds are one replication unit, not a universal requirement; use trials, episodes, scenes, environments, robots, or prompt runs when they fit the paper route better
+- Preserve baseline/protocol fairness: same data split, detector, prompt/model, hardware, or training budget when those factors affect claims
+- Every output metric should be traceable to the evidence matrix and usable by data-analysis/table-generation
+- End major generate/improve/debug loops with a convergence closure: supported evidence rows, whether the stable kernel changed, bounded open questions, freeze criteria, and the next narrowing step
 
 ## Related Skills
 - Upstream: [experiment-design](../experiment-design/), [algorithm-design](../algorithm-design/)

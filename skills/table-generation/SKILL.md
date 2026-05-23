@@ -29,6 +29,8 @@ Additional flags: `--type multi-dataset` for methods x datasets x metrics layout
 ## References
 
 - LaTeX table templates and examples: `${CODEX_HOME:-$HOME/.codex}/skills/table-generation/references/table-templates.md`
+- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Table Types
 
@@ -50,6 +52,14 @@ Additional flags: `--type multi-dataset` for methods x datasets x metrics layout
 
 ### `custom` — Free-form table
 - User specifies layout and content
+
+## Venue-Aware Table Selection
+
+Use the evidence matrix to decide which tables are necessary:
+- CV/visual method papers: main benchmark, ablation, protocol/fairness notes, runtime/efficiency if claimed
+- Robotics/system papers: main task success, robustness/deployment, runtime/hardware, ablation, failure cases
+- ML/AI papers: controlled comparison, generalization, ablation, sensitivity, compute/efficiency
+- LLM/VLM/embodied papers: grounding or task-success table, model-interface ablation, prompt/model variant comparison, failure taxonomy
 
 ## Required Packages
 ```latex
@@ -77,6 +87,10 @@ Always generate tables with:
 - Keep tables compact — avoid unnecessary columns
 - Use `table*` for wide tables spanning two columns
 - Add glossary/notes for abbreviated column headers
+- Every table must support a claim in the evidence matrix or answer a reviewer/venue risk
+- Include hardware, detector, dataset split, prompt/model, or protocol notes when needed for fairness
+- Do not add columns merely because data exists; keep the table aligned with the selected venue profile
+- End major table-generation rounds with the closure block from the venue writing policy
 
 ## Related Skills
 - Upstream: [data-analysis](../data-analysis/), [experiment-code](../experiment-code/)
