@@ -65,6 +65,7 @@ def parse_work(work: dict) -> dict | None:
     primary_location = work.get("primary_location", {}) or {}
     source = primary_location.get("source", {}) or {}
     venue = source.get("display_name", "")
+    publisher = source.get("host_organization_name", "") or source.get("host_organization", "") or ""
 
     # ArXiv ID from locations
     arxiv_id = ""
@@ -113,6 +114,7 @@ def parse_work(work: dict) -> dict | None:
         "year": work.get("publication_year"),
         "venue": venue,
         "venue_normalized": venue,
+        "publisher": publisher,
         "peer_reviewed": peer_reviewed,
         "citationCount": work.get("cited_by_count", 0),
         "url": work.get("id", ""),

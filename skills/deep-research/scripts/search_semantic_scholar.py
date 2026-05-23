@@ -124,6 +124,7 @@ def parse_paper(data: dict) -> dict | None:
 
     external_ids = data.get("externalIds", {}) or {}
     arxiv_id = external_ids.get("ArXiv", "")
+    doi = external_ids.get("DOI", "")
 
     pdf_url = ""
     if arxiv_id:
@@ -136,6 +137,7 @@ def parse_paper(data: dict) -> dict | None:
 
     return {
         "paperId": data.get("paperId", ""),
+        "doi": doi,
         "arxiv_id": arxiv_id,
         "title": data["title"],
         "authors": authors,

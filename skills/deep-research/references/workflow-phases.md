@@ -20,10 +20,16 @@ Identify the **latest breakthroughs** and trending directions. Understand what t
      - query: "{topic}"
        num_results: 50
        venues:
+         cvpr: [2025]
+         iccv: [2025]
+         icra: [2025]
+         iros: [2025]
+         corl: [2025]
+         rss: [2025]
          neurips: [2025]
          icml: [2025]
          iclr: [2025, 2026]
-         acl: [2025]
+         aaai: [2025]
    output:
      root: ./deep-research-output/{slug}/phase1_frontier/search_results
      overwrite: true
@@ -33,13 +39,25 @@ Identify the **latest breakthroughs** and trending directions. Understand what t
 
 3. **WebSearch for accepted papers**: "{topic} NeurIPS 2025 accepted", "{topic} ICML 2025 oral"
 
-4. **Write frontier notes** → `phase1_frontier/frontier.md`
+4. **Apply venue quality filter** to any JSONL search results before writing notes:
+   ```
+   python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
+     --input phase1_frontier/search_results/*.jsonl \
+     --output phase1_frontier/frontier_filtered.jsonl \
+     --report phase1_frontier/quality_filter_report.json \
+     --strict-target-venues \
+     --allow-preprints
+   ```
+
+5. **Write frontier notes** → `phase1_frontier/frontier.md`
    - Key recent papers (title, venue, 1-line summary)
    - Trending directions (3-5 themes)
    - Active research groups
+   - Quality filter counts and any important exclusions
 
 ### Quality Checks
 - At least 10 papers from the latest 1-2 conference cycles
+- No MDPI or other blocked publisher records used as evidence
 - Clear picture of what's "hot" right now
 
 ### Gate → Phase 2
@@ -68,23 +86,35 @@ Build a comprehensive landscape. Discover **35-80 relevant papers** spanning rec
    ```
    python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge \
      --inputs phase1_frontier/search_results/*.jsonl phase2_survey/search_results/*.jsonl \
-     --output paper_db.jsonl
+     --output merged_raw.jsonl
    ```
 
-4. **Filter to 35-80 papers** (critical step):
+4. **Apply venue quality filter**:
+   ```
+   python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
+     --input merged_raw.jsonl \
+     --output paper_db.jsonl \
+     --report quality_filter_report.json \
+     --strict-target-venues \
+     --allow-preprints
+   ```
+
+5. **Filter to 35-80 papers** (critical step):
    ```
    python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter \
      --input paper_db.jsonl -o paper_db.jsonl \
      --min-score 0.80 --max-papers 70 \
-     --keywords agent bio drug protein reason plan
+     --keywords uav drone robotics robot vision pose tracking reinforcement navigation
    ```
 
-5. **Cluster and analyze**: Group by methodology, application domain
+6. **Cluster and analyze**: Group by methodology, application domain
 
-6. **Write survey notes** → `phase2_survey/survey.md`
+7. **Write survey notes** → `phase2_survey/survey.md`
 
 ### Quality Checks
 - 35-80 papers in paper_db.jsonl (NOT more)
+- `quality_filter_report.json` exists and reports excluded records
+- No MDPI or other blocked publisher records used as evidence
 - At least 3 distinct themes identified
 - Mix of recent and foundational papers
 

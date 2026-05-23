@@ -41,7 +41,17 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_opena
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge \
   --inputs results_s2.jsonl results_arxiv.jsonl results_openalex.jsonl \
-  --output merged.jsonl
+  --output merged_raw.jsonl
+```
+
+### Quality Filter (required for UAV/CV/robotics/RL work)
+```bash
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
+  --input merged_raw.jsonl \
+  --output merged.jsonl \
+  --report quality_filter_report.json \
+  --strict-target-venues \
+  --allow-preprints
 ```
 
 ### CrossRef (DOI-based lookup, broadest type coverage)
@@ -72,15 +82,18 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.p
 2. Run Semantic Scholar search (primary) with expanded queries
 3. Run arXiv for very recent preprints (< 3 months)
 4. Optionally run OpenAlex for broader coverage
-5. Merge and deduplicate results
-6. Rank by: citations (0.3) + recency (0.3) + venue quality (0.2) + relevance (0.2)
-7. Present structured results table
+5. Merge and deduplicate results to `merged_raw.jsonl`
+6. Run `filter_publications.py` before ranking or presenting results
+7. Rank by: citations (0.25) + recency (0.25) + priority_tier/venue quality (0.3) + relevance (0.2)
+8. Present structured results table and mention how many records were excluded by `quality_filter_report.json`
 
 ## Venue Quality Tiers
 
-**Tier 1:** NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, CVPR, ICCV, ECCV, KDD, AAAI, IJCAI, SIGIR, WWW
-**Tier 2:** AISTATS, UAI, COLT, COLING, EACL, WACV, JMLR, TACL
-**Tier 3:** Workshops, arXiv preprints — mark with `(preprint)`
+Use `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`.
+
+For the user's UAV/CV/robotics/RL scope, Tier 1 includes Science Robotics, IJRR, T-RO, T-ASE, RA-L, RSS, ICRA, IROS, CoRL, CVPR, ICCV, ECCV, TPAMI, IJCV, TIP, TMM, TCSVT, NeurIPS, ICML, ICLR, AAAI, IJCAI, AAMAS, and JMLR.
+
+Hard-block MDPI and other blacklist matches by publisher, DOI prefix, domain, or exact journal title before presenting results.
 
 ## Output Format
 

@@ -17,6 +17,7 @@ Conduct deep literature reviews through multi-perspective dialogue and systemati
 
 - Multi-perspective dialogue prompts (STORM): `${CODEX_HOME:-$HOME/.codex}/skills/literature-review/references/dialogue-prompts.md`
 - Literature review workflow (AgentLaboratory): `${CODEX_HOME:-$HOME/.codex}/skills/literature-review/references/review-workflow.md`
+- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
 
 ## Scripts (from literature-search skill)
 
@@ -29,6 +30,14 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_opena
 
 # Search arXiv
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py --query "topic" --max-results 10
+
+# Filter merged records before synthesis
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
+  --input merged_raw.jsonl \
+  --output merged.jsonl \
+  --report quality_filter_report.json \
+  --strict-target-venues \
+  --allow-preprints
 ```
 
 ## Workflow
@@ -44,10 +53,11 @@ For each persona, simulate a multi-turn Q&A conversation:
 1. **Persona asks a question** from their unique angle
 2. **Generate search queries** from the question
 3. **Search literature** using the search scripts
-4. **Synthesize an answer** grounded in retrieved papers with inline citations
-5. **Record the dialogue turn** with search results
-6. Repeat for 3-5 turns per persona
-7. End when persona says "Thank you so much for your help!"
+4. **Merge and quality-filter results** before using any paper in the answer
+5. **Synthesize an answer** grounded in filtered papers with inline citations
+6. **Record the dialogue turn** with search results and quality-filter counts
+7. Repeat for 3-5 turns per persona
+8. End when persona says "Thank you so much for your help!"
 
 ### Step 3: Synthesize Knowledge
 - Combine all persona conversations into a unified knowledge base
@@ -71,6 +81,7 @@ A structured literature review with:
 ## Rules
 
 - Every sentence in the review must be supported by gathered information
+- Use only papers that pass the venue quality filter; excluded papers may be noted as excluded, but not used as evidence
 - If information is not found, explicitly state the gap
 - Cite broadly — cover diverse approaches, not just the most popular
 - Include recent papers (last 2-3 years) alongside foundational work

@@ -59,17 +59,32 @@ Before starting Phase N+1, you MUST verify that Phase N's **required output file
 **Peer-reviewed conference papers take priority over arXiv preprints.** Many arXiv papers have not undergone peer review and may contain unverified claims.
 
 ### Source Priority (highest to lowest)
-1. **Top AI conferences**: NeurIPS, ICLR, ICML, ACL, EMNLP, NAACL, AAAI, IJCAI, CVPR, KDD, CoRL
-2. **Peer-reviewed journals**: JMLR, TACL, Nature, Science, etc.
-3. **Workshop papers**: NeurIPS/ICML workshops (lower bar but still reviewed)
-4. **arXiv preprints with high citations**: Likely high-quality but unverified
-5. **Recent arXiv preprints**: Use cautiously, note "preprint" status explicitly
+1. **User target venues**: Science Robotics, IJRR, T-RO, T-ASE, RA-L, RSS, ICRA, IROS, CoRL, CVPR, ICCV, ECCV, TPAMI, IJCV, TIP, TMM, TCSVT, NeurIPS, ICML, ICLR, AAAI, IJCAI, AAMAS, JMLR
+2. **Strong related venues**: Journal of Field Robotics, Autonomous Robots, Robotics and Autonomous Systems, EAAI, Pattern Recognition, CVIU, WACV, BMVC, ACCV, CASE, TNNLS, Neural Networks
+3. **Conditional venues**: T-ITS, TGRS, ISPRS JPRS, Remote Sensing of Environment, Automatica, TAC, Control Engineering Practice
+4. **arXiv preprints with strong relevance**: Use cautiously, note "preprint" status explicitly
+5. **Recent arXiv preprints**: Use only as supplementary evidence
 
 ### When to Use arXiv Papers
 - As **supplementary** evidence alongside peer-reviewed work
 - For **very recent** results (< 3 months old) not yet at conferences
 - When a peer-reviewed version doesn't exist yet — note `(preprint)` in citations
 - For **survey/review** papers (these are useful even without peer review)
+
+### Hard Quality Filter
+
+Before writing or reading from `paper_db.jsonl`, run the user venue quality filter. This hard-blocks MDPI and other user-excluded low-quality or predatory publisher patterns, and tags target venues with `priority_tier`.
+
+```bash
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
+  --input merged_raw.jsonl \
+  --output paper_db.jsonl \
+  --report quality_filter_report.json \
+  --strict-target-venues \
+  --allow-preprints
+```
+
+See `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` for target venues and blacklist rules. If a blocked record looks important, mention it only as "excluded by user quality policy"; do not use it as evidence.
 
 ## Search Tools (by priority)
 
@@ -112,6 +127,7 @@ For searching recent papers not yet published at conferences. Mark citations wit
 | `download_papers.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output-dir`, `--max-downloads`, `--sort-by-citations` |
 | `extract_pdf.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--pdf`, `--pdf-dir`, `--output-dir`, `--sections-only` |
 | `paper_db.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | subcommands: `merge`, `search`, `filter`, `tag`, `stats`, `add`, `export` |
+| `filter_publications.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--input`, `--output`, `--report`, `--strict-target-venues`, `--allow-preprints` |
 | `bibtex_manager.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output`, `--keys-only` |
 | `compile_report.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--topic-dir` |
 
@@ -134,9 +150,10 @@ Search the **latest** conference proceedings and preprints to understand current
 Build a comprehensive landscape with broader time range. Target **35-80 papers** after filtering.
 1. Write `phase2_survey/paper_finder_config.yaml` covering 2023-2025
 2. Run paper_finder + Semantic Scholar + arXiv
-3. Merge all results: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge`
-4. Filter to 35-80 most relevant: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter --min-score 0.80 --max-papers 70`
-5. Cluster by theme, write survey notes
+3. Merge all results to `merged_raw.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge`
+4. Apply venue quality filter to create `paper_db.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py --input merged_raw.jsonl --output paper_db.jsonl --report quality_filter_report.json --strict-target-venues --allow-preprints`
+5. Filter to 35-80 most relevant if needed: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter --min-score 0.80 --max-papers 70`
+6. Cluster by theme, write survey notes
 → Output: `phase2_survey/survey.md`, `phase2_survey/search_results/`, `paper_db.jsonl`
 
 ### Phase 3: Deep Dive ⚠️ DO NOT SKIP
@@ -221,7 +238,7 @@ output/{topic-slug}/
 
 - **Paper IDs**: Use `arxiv_id` when available, otherwise Semantic Scholar `paperId`
 - **Citations**: `[@key]` format, key = firstAuthorYearWord (e.g., `[@vaswani2017attention]`)
-- **JSONL schema**: title, authors, abstract, year, venue, venue_normalized, **peer_reviewed**, citationCount, paperId, arxiv_id, pdf_url, tags, source
+- **JSONL schema**: title, authors, abstract, year, venue, venue_normalized, **peer_reviewed**, citationCount, paperId, arxiv_id, pdf_url, tags, source, priority_tier, priority_venue
 - **Preprint marking**: Always note `(preprint)` when citing non-peer-reviewed work
 - **Incremental saves**: Each phase writes to disk immediately
 - **Paper count**: Target 35-80 papers in final paper_db.jsonl (use `paper_db.py filter`)
@@ -231,6 +248,7 @@ output/{topic-slug}/
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/workflow-phases.md` — Detailed 6-phase methodology
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/note-format.md` — Note templates, BibTeX format, report structure
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/api-reference.md` — arXiv, Semantic Scholar, ar5iv API guide
+- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` — UAV/CV/robotics/RL target venues and quality blacklist
 
 ## Related Skills
 - Downstream: [literature-search](../literature-search/), [literature-review](../literature-review/), [citation-management](../citation-management/)
