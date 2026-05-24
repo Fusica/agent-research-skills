@@ -1,0 +1,60 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/prompt_context.py session-start 2>/dev/null || python .codex/hooks/prompt_context.py session-start 2>/dev/null || true",
+            "statusMessage": "Loading planning context"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/prompt_context.py user-prompt-submit 2>/dev/null || python .codex/hooks/prompt_context.py user-prompt-submit 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|Read|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/pre_tool_use.py 2>/dev/null || python .codex/hooks/pre_tool_use.py 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|Read|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/post_tool_use.py 2>/dev/null || python .codex/hooks/post_tool_use.py 2>/dev/null || true",
+            "statusMessage": "Reviewing planning context"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/stop.py 2>/dev/null || python .codex/hooks/stop.py 2>/dev/null || true",
+            "statusMessage": "Checking planning status"
+          }
+        ]
+      }
+    ]
+  }
+}
