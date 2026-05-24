@@ -5,21 +5,16 @@ converging toward a publishable ML/robotics paper.
 
 ## Separation of Concerns
 
-- Hard filters apply only to source quality: blocked publishers, predatory
-  venues, low-quality mega journals, and unreliable sources must not become
-  novelty evidence, core related work, or citation support.
-- Reputable preprints, arXiv papers, technical reports, and strong open-source
-  artifacts may be used as lower-confidence novelty-risk signals when clearly
-  labeled as non-peer-reviewed. Do not cite them as final authority unless the
-  venue and task make that acceptable.
-- Scope filters are soft priorities, not exclusions. The main umbrella is
-  ML/robotics, including computer vision, robot learning, RL, embodied AI,
-  UAV/autonomous systems, multimodal perception, LLM/VLM/foundation-model
-  methods for robotics, and adjacent learning/control methods when they can
-  support a measurable paper claim.
-- Venue positioning becomes stricter over time. Early ideation may explore
-  broadly; experiment design and writing must eventually choose a paper type
-  and venue cluster.
+- Literature discovery is unrestricted. Do not exclude or prioritize papers by
+  publisher, journal, venue, DOI prefix, domain, preprint status, or perceived
+  source quality.
+- Treat every found paper as available evidence. Later stages may decide that a
+  paper is weak, irrelevant, redundant, or not worth citing, but search should
+  not hide it.
+- Scope narrowing is evidence-driven, not source-driven. The project narrows
+  because the stable kernel, method, experiments, and claims become clearer.
+- Venue positioning is a writing and packaging decision, not a literature
+  search filter.
 
 ## Persistence and Planning Files
 
@@ -36,8 +31,8 @@ pipeline.
 
 ## Progressive Convergence Ladder
 
-1. Exploration: collect high-quality ideas, papers, methods, and analogies
-   without prematurely excluding bridge areas such as LLM/VLM or embodied AI.
+1. Exploration: collect topic-relevant ideas, papers, methods, and analogies
+   without prematurely excluding sources or adjacent areas.
 2. Stable kernel: identify the problem, target user/scenario, core technical
    hypothesis, expected contribution type, and the first plausible venue
    cluster.
@@ -81,8 +76,8 @@ Next Narrowing Step:
 
 - Do not introduce new minor objections after the freeze criteria are met
   unless they are fatal to novelty, feasibility, venue fit, or evidence.
-- Do not treat low-quality or blocked venues as proof that an idea lacks
-  novelty.
+- Do not dismiss novelty evidence because of where it appeared; assess overlap
+  by content and relevance.
 - Do not force every idea into UAV-only, CV-only, RL-only, or robotics-only
   scope. The scope should narrow because the paper type and evidence demand it.
 - Prefer a stable, testable core over an ever-growing list of possible angles.

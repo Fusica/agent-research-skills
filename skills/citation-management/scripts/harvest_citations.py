@@ -27,8 +27,8 @@ import urllib.request
 S2_API = "https://api.semanticscholar.org/graph/v1/paper/search"
 
 
-def load_quality_filter():
-    """Load the shared publication quality filter from the deep-research skill."""
+def load_publication_policy():
+    """Load the shared publication passthrough policy from the deep-research skill."""
     candidates = []
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
@@ -46,7 +46,7 @@ def load_quality_filter():
     raise RuntimeError("Could not locate deep-research/scripts/filter_publications.py")
 
 
-QUALITY_FILTER = load_quality_filter()
+PUBLICATION_POLICY = load_publication_policy()
 
 CLAIM_PATTERNS = [
     r"(?:has been shown|have been shown|was shown|were shown|is known|are known)",
@@ -138,8 +138,8 @@ def search_semantic_scholar(query: str, limit: int = 3, api_key: str = "") -> li
         return []
 
 
-def normalize_for_quality_filter(paper: dict) -> dict:
-    """Add common fields expected by the shared quality filter."""
+def normalize_for_publication_policy(paper: dict) -> dict:
+    """Add common fields expected by the shared publication policy."""
     record = dict(paper)
     ext_ids = record.get("externalIds", {}) or {}
     record["doi"] = record.get("doi") or ext_ids.get("DOI", "")
@@ -148,10 +148,10 @@ def normalize_for_quality_filter(paper: dict) -> dict:
     return record
 
 
-def apply_quality_filter(papers: list[dict], *, strict_target_venues: bool = False) -> tuple[list[dict], dict]:
-    """Apply the user's venue/publisher quality policy to citation candidates."""
-    normalized = [normalize_for_quality_filter(paper) for paper in papers]
-    return QUALITY_FILTER(normalized, strict_target_venues=strict_target_venues, allow_preprints=True)
+def apply_publication_policy(papers: list[dict]) -> tuple[list[dict], dict]:
+    """Keep all citation candidates for relevance-based selection."""
+    normalized = [normalize_for_publication_policy(paper) for paper in papers]
+    return PUBLICATION_POLICY(normalized)
 
 
 def make_bibtex_key(paper: dict) -> str:
@@ -210,7 +210,6 @@ def main():
     parser.add_argument("--api-key", default="", help="Semantic Scholar API key")
     parser.add_argument("--dry-run", action="store_true", help="Only show claims, don't search")
     parser.add_argument("--verbose", action="store_true", help="Print detailed progress")
-    parser.add_argument("--strict-target-venues", action="store_true", help="Keep only target-venue citations; default keeps high-quality bridge papers")
     args = parser.parse_args()
 
     with open(args.tex, encoding="utf-8", errors="replace") as f:
@@ -245,21 +244,18 @@ def main():
     for i, claim in enumerate(claims[:rounds]):
         print(f"\n[{i+1}/{rounds}] Searching for: {claim['query'][:60]}...", file=sys.stderr)
         raw_papers = search_semantic_scholar(claim["query"], limit=3, api_key=args.api_key)
-        papers, quality_report = apply_quality_filter(raw_papers, strict_target_venues=args.strict_target_venues)
+        papers, policy_report = apply_publication_policy(raw_papers)
         time.sleep(1)  # Rate limiting
 
         if not raw_papers:
             if args.verbose:
                 print(f"  No results found.", file=sys.stderr)
             continue
-        if quality_report["rejected"] and args.verbose:
-            print(
-                f"  Quality filter rejected {quality_report['rejected']} of {quality_report['total']} results.",
-                file=sys.stderr,
-            )
+        if args.verbose:
+            print(f"  Publication policy kept {policy_report['kept']} of {policy_report['total']} results.", file=sys.stderr)
         if not papers:
             if args.verbose:
-                print("  No results remain after quality filtering.", file=sys.stderr)
+                print("  No results remain after publication policy processing.", file=sys.stderr)
             continue
 
         # Pick the most cited result

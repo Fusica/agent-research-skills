@@ -142,7 +142,7 @@ def compute_stats(papers: list[dict]) -> str:
     # By venue (top 10)
     venues = Counter(p.get("venue", "") or "Preprint" for p in papers)
     top_venues = venues.most_common(10)
-    lines.append("\n**Top venues**:")
+    lines.append("\n**Venue counts**:")
     for venue, count in top_venues:
         lines.append(f"- {venue}: {count}")
 

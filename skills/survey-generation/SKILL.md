@@ -23,7 +23,7 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 ## References
 
 - Survey prompts (outline, writing, citation, coherence): `${CODEX_HOME:-$HOME/.codex}/skills/survey-generation/references/survey-prompts.md`
-- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Publication relevance policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`
 - Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow (from AutoSurvey)
@@ -31,9 +31,9 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 ### Step 1: Collect Papers
 1. Search Semantic Scholar / arXiv for papers on the topic
 2. Merge raw results to `merged_raw.jsonl`
-3. Apply `filter_publications.py` with `--allow-preprints`; add `--strict-target-venues` only for target-venue-only surveys
-4. Collect 50-200 filtered relevant papers with titles and abstracts
-5. Filter by relevance, citation count, and `priority_tier`
+3. Run `filter_publications.py` only as a keep-all compatibility passthrough
+4. Collect 50-200 topic-relevant papers with titles and abstracts
+5. Select and cluster papers by semantic relevance to the survey topic
 
 ### Step 2: Generate Outline (Multi-LLM Parallel)
 1. Generate N rough outlines independently (parallel)
@@ -80,7 +80,7 @@ survey/
 ## Rules
 
 - Only cite papers from the collected paper list — never hallucinate citations
-- The collected paper list must pass the user venue quality filter before outline generation or RAG writing
+- Keep all collected sources available; do not exclude by venue, publisher, journal, DOI prefix, domain, or preprint status
 - Each subsection must meet minimum word count
 - No duplicate subsections across sections
 - Citation validation is mandatory before final output

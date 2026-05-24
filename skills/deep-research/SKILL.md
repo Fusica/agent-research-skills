@@ -54,40 +54,26 @@ Before starting Phase N+1, you MUST verify that Phase N's **required output file
 - **Phase 5 (Synthesis)** requires deep knowledge from Phase 3 — you cannot synthesize papers you haven't read
 - **Phase 6 (Report)** assembles content from ALL prior phases — it should cite specific findings from Phase 3 notes
 
-## Paper Quality Policy
+## Publication Relevance Policy
 
-**Peer-reviewed conference papers take priority over arXiv preprints.** Many arXiv papers have not undergone peer review and may contain unverified claims.
+Keep literature discovery unrestricted. Do not exclude or prioritize papers by
+venue, publisher, journal, DOI prefix, domain, preprint status, or perceived
+source quality. Include any paper that is relevant to the user's topic.
 
-### Source Priority (highest to lowest)
-1. **User target venues**: Science Robotics, IJRR, T-RO, T-ASE, RA-L, RSS, ICRA, IROS, CoRL, CVPR, ICCV, ECCV, TPAMI, IJCV, TIP, TMM, TCSVT, NeurIPS, ICML, ICLR, AAAI, IJCAI, AAMAS, JMLR
-2. **Strong related venues**: Journal of Field Robotics, Autonomous Robots, Robotics and Autonomous Systems, EAAI, Pattern Recognition, CVIU, WACV, BMVC, ACCV, CASE, TNNLS, Neural Networks
-3. **Conditional venues**: T-ITS, TGRS, ISPRS JPRS, Remote Sensing of Environment, Automatica, TAC, Control Engineering Practice
-4. **arXiv preprints with strong relevance**: Use cautiously, note "preprint" status explicitly
-5. **Recent arXiv preprints**: Use only as supplementary evidence
-
-### When to Use arXiv Papers
-- As **supplementary** evidence alongside peer-reviewed work
-- For **very recent** results (< 3 months old) not yet at conferences
-- When a peer-reviewed version doesn't exist yet — note `(preprint)` in citations
-- For **survey/review** papers (these are useful even without peer review)
-
-### Hard Quality Filter
-
-Before writing or reading from `paper_db.jsonl`, run the user venue quality filter. This hard-blocks MDPI and other user-excluded low-quality or predatory publisher patterns, and tags target venues with `priority_tier`.
+Use `filter_publications.py` only as a compatibility passthrough for older
+workflow steps that expect this command:
 
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
   --input merged_raw.jsonl \
   --output paper_db.jsonl \
-  --report quality_filter_report.json \
-  --allow-preprints
+  --report publication_policy_report.json
 ```
 
-See `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` for target venues and blacklist rules. If a blocked record looks important, mention it only as "excluded by user quality policy"; do not use it as evidence.
-For open exploration, treat target venues as priority/ranking signals unless the user explicitly requests strict venue filtering. Keep LLM/VLM, embodied AI, CV, RL, and robotics bridge papers when they are high quality and relevant to the stable kernel.
+See `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md` for the current keep-all relevance policy.
 When deep research is part of a paper pipeline, also load `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md` and end Phase 5/6 with the convergence closure block.
 
-## Search Tools (by priority)
+## Search Tools
 
 ### 1. paper_finder (optional external tool — conference papers only)
 **Location**: Not bundled. Use only if the current machine has a working `paper_finder.py` and the user provides its path.
@@ -116,7 +102,7 @@ output:
 
 ### 2. search_semantic_scholar.py (supplementary — citation data + broader coverage)
 **Location**: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py`
-Supports `--peer-reviewed-only` and `--top-conferences` filters. API key: `$HOME/keys.md` (field `S2_API_Key`)
+Use broad topic queries and keep all source types. API key: `$HOME/keys.md` (field `S2_API_Key`)
 
 ### 3. search_arxiv.py (supplementary — latest preprints)
 **Location**: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py`
@@ -128,7 +114,7 @@ For searching recent papers not yet published at conferences. Mark citations wit
 | `download_papers.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output-dir`, `--max-downloads`, `--sort-by-citations` |
 | `extract_pdf.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--pdf`, `--pdf-dir`, `--output-dir`, `--sections-only` |
 | `paper_db.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | subcommands: `merge`, `search`, `filter`, `tag`, `stats`, `add`, `export` |
-| `filter_publications.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--input`, `--output`, `--report`, `--strict-target-venues`, `--allow-preprints` |
+| `filter_publications.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--input`, `--output`, `--report` |
 | `bibtex_manager.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output`, `--keys-only` |
 | `compile_report.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--topic-dir` |
 
@@ -140,19 +126,19 @@ For searching recent papers not yet published at conferences. Mark citations wit
 ## 6-Phase Workflow
 
 ### Phase 1: Frontier
-Search the **latest** conference proceedings and preprints to understand current trends.
-1. Write `phase1_frontier/paper_finder_config.yaml` targeting latest 1-2 years
-2. Run paper_finder scrape
-3. Search the web for latest accepted paper lists
-4. Identify trending directions, key breakthroughs
+Search broadly for topic-relevant papers, preprints, surveys, and adjacent work.
+1. Write `phase1_frontier/paper_finder_config.yaml` with broad query variants
+2. Run paper_finder scrape when it is useful for the topic
+3. Search the web for relevant paper lists and project pages
+4. Identify trending directions, key breakthroughs, and direct overlaps
 → Output: `phase1_frontier/frontier.md`, `phase1_frontier/search_results/`
 
 ### Phase 2: Survey
-Build a comprehensive landscape with broader time range. Target **35-80 papers** after filtering.
-1. Write `phase2_survey/paper_finder_config.yaml` covering 2023-2025
+Build a comprehensive landscape with broader time range. Target **35-80 topic-relevant papers** after relevance selection.
+1. Write `phase2_survey/paper_finder_config.yaml` covering broad topic variants
 2. Run paper_finder + Semantic Scholar + arXiv
 3. Merge all results to `merged_raw.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge`
-4. Apply venue quality filter to create `paper_db.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py --input merged_raw.jsonl --output paper_db.jsonl --report quality_filter_report.json --allow-preprints`. Add `--strict-target-venues` only when the user asks to restrict results to the target venue list.
+4. Run the publication passthrough to create `paper_db.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py --input merged_raw.jsonl --output paper_db.jsonl --report publication_policy_report.json`.
 5. Filter to 35-80 most relevant if needed: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter --min-score 0.80 --max-papers 70`
 6. Cluster by theme, write survey notes
 → Output: `phase2_survey/survey.md`, `phase2_survey/search_results/`, `paper_db.jsonl`
@@ -239,8 +225,8 @@ output/{topic-slug}/
 
 - **Paper IDs**: Use `arxiv_id` when available, otherwise Semantic Scholar `paperId`
 - **Citations**: `[@key]` format, key = firstAuthorYearWord (e.g., `[@vaswani2017attention]`)
-- **JSONL schema**: title, authors, abstract, year, venue, venue_normalized, **peer_reviewed**, citationCount, paperId, arxiv_id, pdf_url, tags, source, priority_tier, priority_venue
-- **Preprint marking**: Always note `(preprint)` when citing non-peer-reviewed work
+- **JSONL schema**: title, authors, abstract, year, venue, venue_normalized, peer_reviewed, citationCount, paperId, arxiv_id, pdf_url, tags, source
+- **Source marking**: Note source type when useful, but do not remove papers based on source type
 - **Incremental saves**: Each phase writes to disk immediately
 - **Paper count**: Target 35-80 papers in final paper_db.jsonl (use `paper_db.py filter`)
 
@@ -249,7 +235,7 @@ output/{topic-slug}/
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/workflow-phases.md` — Detailed 6-phase methodology
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/note-format.md` — Note templates, BibTeX format, report structure
 - `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/api-reference.md` — arXiv, Semantic Scholar, ar5iv API guide
-- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md` — ML/robotics/CV/RL/embodied AI/LLM-VLM target venues and quality blacklist
+- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md` — unrestricted relevance-only publication policy
 
 ## Related Skills
 - Downstream: [literature-search](../literature-search/), [literature-review](../literature-review/), [citation-management](../citation-management/)

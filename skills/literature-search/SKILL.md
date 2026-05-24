@@ -25,12 +25,12 @@ Use the active plan to choose search scope and write durable findings back to
 ### Semantic Scholar (primary — best for ML/AI, has BibTeX)
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
-  --query "QUERY" --max-results 20 --year-range 2022-2026 \
+  --query "QUERY" --max-results 20 \
   --api-key "$(grep S2_API_Key $HOME/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')" \
   -o results_s2.jsonl
 ```
 
-Key flags: `--peer-reviewed-only`, `--top-conferences`, `--min-citations N`, `--venue NeurIPS ICML`
+Useful optional flag: `--year-range 2020-2026` only when the user explicitly asks for a time window.
 
 ### arXiv (latest preprints)
 ```bash
@@ -41,8 +41,7 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py 
 ### OpenAlex (broadest coverage, free, no API key)
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_openalex.py \
-  --query "QUERY" --max-results 20 --year-range 2022-2026 \
-  --min-citations 5 -o results_openalex.jsonl
+  --query "QUERY" --max-results 20 -o results_openalex.jsonl
 ```
 
 ### Merge & Deduplicate
@@ -52,15 +51,14 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merg
   --output merged_raw.jsonl
 ```
 
-### Quality Filter (required for ML/robotics/CV/RL/embodied AI/LLM-VLM work)
+### Publication Policy (keep all sources)
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
   --input merged_raw.jsonl \
   --output merged.jsonl \
-  --report quality_filter_report.json \
-  --allow-preprints
+  --report publication_policy_report.json
 ```
-Use `--strict-target-venues` only when the user explicitly asks for target-venue-only results. Otherwise, hard-block low-quality/predatory sources and use venue tiers as ranking signals so high-quality bridge work is not lost.
+This is a compatibility passthrough. It keeps all papers from all sources and removes stale source-ranking metadata.
 
 ### CrossRef (DOI-based lookup, broadest type coverage)
 ```bash
@@ -95,19 +93,16 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.p
 4. Optionally run OpenAlex for broader coverage
 5. Use Google Scholar only as a manual/browser cross-check when structured sources miss or disagree
 6. Merge and deduplicate results to `merged_raw.jsonl`
-7. Run `filter_publications.py` before ranking or presenting results
-8. Rank by: citations (0.25) + recency (0.25) + priority_tier/venue quality (0.3) + relevance (0.2)
-9. Present structured results table and mention how many records were excluded by `quality_filter_report.json`
+7. Run `filter_publications.py` only if a workflow expects `merged.jsonl`; it does not exclude records
+8. Rank by topical relevance to the user's query; use citations and recency only as descriptive metadata or tie-breakers
+9. Present structured results table and mention that the publication policy kept all records
 10. If a stable kernel or venue hypothesis exists, label each result as core evidence, bridge evidence, baseline candidate, or background
 
-## Venue Quality Tiers
+## Relevance-Only Source Policy
 
-Use `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`.
+Use `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`.
 
-For the user's ML/robotics/CV/RL/embodied AI/LLM-VLM scope, Tier 1 includes Science Robotics, IJRR, T-RO, T-ASE, RA-L, RSS, ICRA, IROS, CoRL, CVPR, ICCV, ECCV, TPAMI, IJCV, TIP, TMM, TCSVT, NeurIPS, ICML, ICLR, AAAI, IJCAI, AAMAS, and JMLR.
-
-Hard-block MDPI and other blacklist matches by publisher, DOI prefix, domain, or exact journal title before presenting results.
-Do not treat the target venue list as a hard scope boundary unless requested.
+Do not exclude, prioritize, or downgrade papers by venue, publisher, journal, DOI prefix, domain, or preprint status. Keep anything topically relevant.
 
 ## Output Format
 

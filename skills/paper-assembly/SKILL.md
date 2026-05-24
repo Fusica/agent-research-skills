@@ -41,7 +41,7 @@ Run phases in dependency order:
 
 | Phase | Skill | Input | Output |
 |-------|-------|-------|--------|
-| 1. Literature | literature-search, literature-review | Topic | Filtered knowledge base, quality_filter_report.json, BibTeX |
+| 1. Literature | literature-search, literature-review | Topic | Relevance-selected knowledge base, publication_policy_report.json, BibTeX |
 | 2. Planning | research-planning | Knowledge base | Stable kernel, paper route, venue hypothesis, paper structure, task list |
 | 3. Code | experiment-code | Plan | Training/eval pipeline |
 | 4. Experiments | experiment-design | Code | Evidence matrix, Results JSON/CSV |
@@ -64,7 +64,7 @@ After each phase completes:
 ### Step 4: Quality Gates
 Before proceeding to the next phase:
 - Verify all required outputs exist
-- For literature/citation phases, verify `quality_filter_report.json` exists or confirm the source is a filtered `paper_db.jsonl`
+- For literature/citation phases, verify `publication_policy_report.json` exists or confirm the source is an unrestricted relevance-selected `paper_db.jsonl`
 - Check for consistency (e.g., all cited keys in .bib)
 - Validate figures/tables match experimental results
 - Verify the current paper route and venue hypothesis are explicit before experiment design
@@ -124,12 +124,12 @@ Human can intervene at any phase boundary for review/correction.
 ## Rules
 
 - Never skip phases — each depends on previous outputs
-- Never propagate unfiltered literature or citation candidates into planning, related work, or writing
+- Keep literature and citation candidates unrestricted; narrow by topical relevance and evidence needs
 - Save checkpoints after every phase completion
 - Human review is recommended at phase boundaries
 - All numbers in the paper must trace to actual experiment logs
 - Re-run downstream phases if upstream changes
-- Keep quality filtering hard but scope narrowing evidence-driven
+- Keep source inclusion open and make scope narrowing evidence-driven
 - Use the closure block after planning, novelty assessment, experiment design, and major writing/revision rounds
 
 ## Related Skills

@@ -23,9 +23,9 @@ This skill systematically discovers, evaluates, and deeply analyzes GitHub repos
 **Output**: `./github-research-output/{slug}/` relative to the current working directory.
 **Input**: A deep-research output directory (containing `paper_db.jsonl`, phase reports, `code_repos.md`, etc.)
 
-## Publication Quality Dependency
+## Publication Relevance Dependency
 
-When using paper titles or arXiv IDs to discover repositories, only use papers from a `paper_db.jsonl` that has passed `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py`. Do not use MDPI, blocked low-quality venues, or predatory-publisher matches to seed Papers With Code or paper-to-repo lookups.
+When using paper titles or arXiv IDs to discover repositories, use any topically relevant paper from `paper_db.jsonl`. Do not exclude paper-to-repo seeds by venue, publisher, journal, DOI prefix, domain, or preprint status.
 If a stable kernel, paper route, or evidence matrix exists, rank repositories by their ability to support the needed claims, baselines, protocols, datasets, or reproducibility gaps. Do not expand the code search into unrelated repo ecosystems.
 Use `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md` when GitHub research feeds idea refinement or experiment planning.
 
@@ -141,7 +141,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
      --output github-research-output/$SLUG/phase2_discovery/search_results/direct_urls.jsonl
    ```
 
-2. **Search Papers With Code**: For each filtered paper with an arxiv ID. Prefer exact `--arxiv-id`; do not use broad Papers With Code query results seeded by blocked papers.
+2. **Search Papers With Code**: For each relevant paper with an arxiv ID. Prefer exact `--arxiv-id`; use broad `--query` when it helps recover repositories for papers without IDs.
    ```bash
    python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/search_paperswithcode.py \
      --arxiv-id 2401.12345 \

@@ -6,8 +6,7 @@ OpenAlex is free, no API key needed, broadest coverage of academic literature.
 
 Usage:
     python search_openalex.py --query "attention mechanism transformers" --max-results 50
-    python search_openalex.py --query "graph neural networks" --min-citations 10 --year-range 2022-2026
-    python search_openalex.py --query "diffusion models" --type article --sort cited_by_count:desc
+    python search_openalex.py --query "graph neural networks" --year-range 2022-2026
 """
 
 import argparse
@@ -128,11 +127,8 @@ def search_works(
     query: str,
     max_results: int = 50,
     year_range: str | None = None,
-    min_citations: int = 0,
-    work_type: str | None = None,
-    sort: str = "cited_by_count:desc",
 ) -> list[dict]:
-    """Search OpenAlex works and return parsed results."""
+    """Search OpenAlex works and return parsed results without source filtering."""
     all_papers = []
 
     filters = []
@@ -140,10 +136,6 @@ def search_works(
         parts = year_range.split("-")
         if len(parts) == 2:
             filters.append(f"publication_year:{parts[0]}-{parts[1]}")
-    if min_citations > 0:
-        filters.append(f"cited_by_count:>{min_citations}")
-    if work_type:
-        filters.append(f"type:{work_type}")
 
     page = 1
     per_page = min(50, max_results)
@@ -153,7 +145,6 @@ def search_works(
             "search": query,
             "per_page": per_page,
             "page": page,
-            "sort": sort,
         }
         if filters:
             params["filter"] = ",".join(filters)
@@ -192,10 +183,7 @@ def main():
     parser = argparse.ArgumentParser(description="Search OpenAlex and output JSONL")
     parser.add_argument("--query", required=True, help="Search keywords")
     parser.add_argument("--max-results", type=int, default=50, help="Max papers to return")
-    parser.add_argument("--min-citations", type=int, default=0, help="Minimum citation count")
     parser.add_argument("--year-range", help="Year range filter (e.g. 2020-2026)")
-    parser.add_argument("--type", help="Work type filter (e.g. article, proceedings-article)")
-    parser.add_argument("--sort", default="cited_by_count:desc", help="Sort order")
     parser.add_argument("--output", "-o", help="Output file (default: stdout)")
     args = parser.parse_args()
 
@@ -203,9 +191,6 @@ def main():
         query=args.query,
         max_results=args.max_results,
         year_range=args.year_range,
-        min_citations=args.min_citations,
-        work_type=args.type,
-        sort=args.sort,
     )
 
     out = open(args.output, "w") if args.output else sys.stdout

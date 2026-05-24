@@ -133,8 +133,6 @@ externalIds,url,publicationDate,tldr,isOpenAccess,openAccessPdf
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
   --query "long horizon reasoning LLM agent" \
   --max-results 100 \
-  --min-citations 10 \
-  --year-range 2022-2026 \
   --api-key <key> \
   -o results.jsonl
 ```
@@ -201,7 +199,7 @@ https://api.openreview.net/notes?content.venue=NeurIPS+2024&content.title=reason
 Fetch the URL with the available browser/web tool and extract paper titles, authors, and ratings.
 
 ### Notes
-- Useful for finding accepted papers at top venues with review scores
+- Useful for finding accepted papers at named venues when the query explicitly needs review metadata
 - Rate limiting is generous but be polite
 - Reviews and scores available for many venues
 

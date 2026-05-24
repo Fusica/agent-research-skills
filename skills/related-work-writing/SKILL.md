@@ -16,7 +16,7 @@ Generate publication-quality Related Work sections with proper citations and the
 ## References
 
 - Related work writing prompts and strategies: `${CODEX_HOME:-$HOME/.codex}/skills/related-work-writing/references/related-work-prompts.md`
-- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Publication relevance policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`
 - Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
 - Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
@@ -29,13 +29,13 @@ Generate publication-quality Related Work sections with proper citations and the
 - Identify the paper route and venue hypothesis so the related work narrows toward the selected submission profile
 
 ### Step 2: Organize Literature by Theme
-Before grouping papers, verify the collected literature came from filtered `paper_db.jsonl`, `quality_filter_report.json`, or filtered citation results. Do not use excluded papers as evidence.
+Before grouping papers, verify the collected literature came from relevance-oriented search results. Do not exclude papers by venue, publisher, journal, DOI prefix, domain, or preprint status.
 
 Group related papers into thematic clusters:
 - Each cluster should represent a research direction or technique
 - Common themes: problem formulation, methodology family, application domain, evaluation approach
 - Order themes from most to least relevant to your work
-- Keep LLM/VLM, embodied AI, CV, RL, and robotics bridge work when it explains the stable kernel; exclude it only when it has no measurable connection to the paper claim
+- Keep any paper when it explains the stable kernel or has a measurable connection to the paper claim
 
 ### Step 3: Write Each Theme Paragraph
 For each thematic group:
@@ -56,7 +56,7 @@ For each thematic group:
 - **Compare and contrast, don't just describe** — "Unlike [X] which assumes..., our method..."
 - **Organize by theme, not chronologically** — Group by research direction
 - **Cite broadly** — Not just the most popular papers; include recent and diverse work
-- **Cite filtered work only** — Do not include MDPI, blocked low-quality venues, or predatory-publisher matches
+- **Cite relevant work** — Include any paper that is useful for comparison, background, novelty, or reviewer-risk coverage
 - **Be fair** — Acknowledge strengths of prior work before stating limitations
 - **Explain inapplicability** — If a method could apply to your setting, explain why you don't compare experimentally, or add it to experiments
 - **Use present tense for established facts** — "Smith et al. propose..." or "This approach uses..."

@@ -39,24 +39,22 @@ Identify the **latest breakthroughs** and trending directions. Understand what t
 
 3. **Web search for accepted papers**: "{topic} NeurIPS 2025 accepted", "{topic} ICML 2025 oral"
 
-4. **Apply venue quality filter** to any JSONL search results before writing notes:
+4. **Run publication passthrough** to normalize JSONL search results before writing notes:
    ```
    python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
      --input phase1_frontier/search_results/*.jsonl \
      --output phase1_frontier/frontier_filtered.jsonl \
-     --report phase1_frontier/quality_filter_report.json \
-     --allow-preprints
+     --report phase1_frontier/publication_policy_report.json
    ```
 
 5. **Write frontier notes** → `phase1_frontier/frontier.md`
    - Key recent papers (title, venue, 1-line summary)
    - Trending directions (3-5 themes)
    - Active research groups
-   - Quality filter counts and any important exclusions
+   - Publication policy counts and any metadata caveats
 
-### Quality Checks
+### Checks
 - At least 10 papers from the latest 1-2 conference cycles
-- No MDPI or other blocked publisher records used as evidence
 - Clear picture of what's "hot" right now
 
 ### Gate → Phase 2
@@ -74,11 +72,11 @@ Build a comprehensive landscape. Discover **35-80 relevant papers** spanning rec
 
 ### Steps
 
-1. **Write config**: `phase2_survey/paper_finder_config.yaml` covering 2023-2025 across all major venues
+1. **Write config**: `phase2_survey/paper_finder_config.yaml` covering broad topic variants and adjacent terminology
 
 2. **Search across sources** (save all to `phase2_survey/search_results/`):
-   - **paper_finder (primary)**: Broad config, 2023-2025
-   - **Semantic Scholar (supplementary)**: `--peer-reviewed-only`, save to `s2_results.jsonl`
+   - **paper_finder (optional)**: Broad config when the topic benefits from venue-page scraping
+   - **Semantic Scholar (supplementary)**: broad topic query, save to `s2_results.jsonl`
    - **arXiv (preprints)**: Save to `arxiv_results.jsonl`
 
 3. **Merge and deduplicate**:
@@ -88,16 +86,15 @@ Build a comprehensive landscape. Discover **35-80 relevant papers** spanning rec
      --output merged_raw.jsonl
    ```
 
-4. **Apply venue quality filter**:
+4. **Run publication passthrough**:
    ```
    python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
      --input merged_raw.jsonl \
      --output paper_db.jsonl \
-     --report quality_filter_report.json \
-     --allow-preprints
+     --report publication_policy_report.json
    ```
 
-   Add `--strict-target-venues` only when the user explicitly requests target-venue-only results. Otherwise use the venue tiers for ranking and keep high-quality bridge work that supports the stable kernel.
+   This keeps all sources and removes stale source-ranking metadata. Relevance selection happens in the next step.
 
 5. **Filter to 35-80 papers** (critical step). Choose keywords from the current stable kernel, paper route, and bounded open questions; do not use fixed UAV/drone keywords for unrelated ML/robotics/CV/RL/embodied/LLM-VLM bridge work.
    ```
@@ -110,10 +107,9 @@ Build a comprehensive landscape. Discover **35-80 relevant papers** spanning rec
 
 7. **Write survey notes** → `phase2_survey/survey.md`
 
-### Quality Checks
+### Checks
 - 35-80 papers in paper_db.jsonl (NOT more)
-- `quality_filter_report.json` exists and reports excluded records
-- No MDPI or other blocked publisher records used as evidence
+- `publication_policy_report.json` exists and reports that all records were kept
 - At least 3 distinct themes identified
 - Mix of recent and foundational papers
 

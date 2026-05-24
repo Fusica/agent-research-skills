@@ -20,7 +20,7 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/idea-generation/scripts/novelty_check.
   --idea "Your research idea description" \
   --max-rounds 10 --output novelty_report.json
 ```
-This script collects quality-filtered evidence only. Its default `decision: "unclear"` must be replaced by the agent after overlap assessment.
+This script collects unrestricted topic-relevant evidence only. Its default `decision: "unclear"` must be replaced by the agent after overlap assessment.
 
 ### Literature search
 ```bash
@@ -31,7 +31,7 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 ## References
 
 - Assessment prompts and criteria: `${CODEX_HOME:-$HOME/.codex}/skills/novelty-assessment/references/assessment-prompts.md`
-- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Publication relevance policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`
 - Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow
@@ -45,15 +45,15 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
 For each round:
 1. Generate a targeted search query
 2. Search Semantic Scholar / arXiv / OpenAlex
-3. Apply `filter_publications.py` or use `novelty_check.py`, which applies the same quality filter internally
-4. Review top filtered results with abstracts
+3. Run `filter_publications.py` only as a keep-all compatibility passthrough, or use `novelty_check.py`
+4. Review top topic-relevant results with abstracts
 5. Assess overlap with the idea
 6. Decide: need more searching, or ready to decide
 
 ### Step 3: Make Decision
-- **Novel**: After sufficient searching, no high-quality paper significantly overlaps
+- **Novel**: After sufficient searching, no retrieved paper significantly overlaps
 - **Incremental**: The idea is related to strong prior work, but a sharper formulation, evidence target, or venue positioning may still make it publishable
-- **Not Novel**: Found a high-quality paper that significantly overlaps
+- **Not Novel**: Found a paper that significantly overlaps
 - **Unclear**: Search evidence is insufficient or the idea kernel is still unstable
 
 ### Step 4: Position the Idea
@@ -113,7 +113,7 @@ formulation, or insight.
 - A paper idea is NOT novel if it's a trivial extension
 - Consider both methodology novelty AND application novelty
 - Check for concurrent/recent arXiv submissions
-- Do not use MDPI, blocked low-quality venues, or predatory-publisher matches as overlap evidence; report them only as excluded by user quality policy if relevant
+- Use any topically relevant paper as overlap evidence regardless of venue, publisher, journal, DOI prefix, domain, or preprint status
 - Treat ML/robotics as a broad umbrella. Do not reject LLM/VLM/foundation-model or embodied-AI related ideas unless they lack a measurable link to the target research problem.
 - Once the decision is stable, stop surfacing new small objections unless they are fatal to novelty, feasibility, or venue fit.
 

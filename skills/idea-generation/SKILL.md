@@ -22,12 +22,12 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/idea-generation/scripts/novelty_check.
   --max-rounds 5
 ```
 
-Collects quality-filtered novelty evidence. Treat its `decision: "unclear"` as intentional; the agent must classify overlap and emit the convergence closure block.
+Collects unrestricted novelty evidence. Treat its `decision: "unclear"` as intentional; the agent must classify overlap and emit the convergence closure block.
 
 ## References
 
 - Ideation prompts (generation, reflection, novelty): `${CODEX_HOME:-$HOME/.codex}/skills/idea-generation/references/ideation-prompts.md`
-- Venue quality policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/venue-quality-policy.md`
+- Publication relevance policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`
 - Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Workflow
@@ -36,7 +36,7 @@ Collects quality-filtered novelty evidence. Treat its `decision: "unclear"` as i
 Given a research area and optional code/paper context:
 1. Generate 3-5 diverse research ideas
 2. For each idea, provide: Name, Title, Experiment plan, and ratings
-3. Keep source quality filtering hard, but keep research scope broad within the ML/robotics umbrella
+3. Keep literature search unrestricted and broad; do not exclude papers by source type
 4. Use the ideation prompt templates from references
 
 ### Step 1.5: Classify Paper Type and Venue Fit
@@ -59,17 +59,17 @@ For each idea:
 ### Step 3: Novelty Assessment
 For each promising idea:
 1. Run `novelty_check.py` or manually search Semantic Scholar / arXiv
-2. Apply the venue quality filter before judging similar papers
+2. Keep all retrieved papers available before judging similar papers
 3. Treat script output as evidence, not a final verdict
 4. Use the novelty checking prompts from references
-5. Multi-round search: generate queries, review filtered results, decide
+5. Multi-round search: generate queries, review topic-relevant results, decide
 6. Decision: Novel / Incremental / Not Novel / Unclear with justification
 
 ### Step 4: Rank and Select
 - Score each idea on three dimensions (1-10): Interestingness, Feasibility, Novelty
 - Be cautious and realistic on ratings
 - Select the top idea(s) for development
-- Freeze the current idea kernel when the contribution type, target venue cluster, and minimum evidence plan are stable enough to move into research planning
+- Freeze the current idea kernel when the contribution type, expected paper audience, and minimum evidence plan are stable enough to move into research planning
 
 ### Step 5: Closure
 End each round with the closure block from the research convergence policy:
@@ -108,7 +108,7 @@ Current Stable Kernel, Open But Bounded Questions, Decision Log, Freeze Criteria
 - Be a harsh critic for novelty — ensure sufficient contribution for a conference paper
 - Each idea should stem from a simple, elegant question or hypothesis
 - Always check novelty before committing to an idea
-- Do not use MDPI, blocked low-quality venues, or predatory-publisher matches as novelty evidence; if they appear, treat them only as excluded by user quality policy
+- Use any topically relevant paper as novelty evidence regardless of venue, publisher, journal, DOI prefix, domain, or preprint status
 - Do not make the scope unnecessarily rigid. LLM/VLM, embodied AI, and foundation-model ideas are allowed when they support a measurable ML/robotics contribution.
 - Avoid endless expansion. Once the stable kernel and venue hypothesis are strong enough, stop adding minor angles and move to planning or experiments.
 

@@ -29,8 +29,8 @@ S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
 FIELDS = "title,authors,venue,year,abstract,citationCount,externalIds,url"
 
 
-def load_quality_filter():
-    """Load the shared publication quality filter from the deep-research skill."""
+def load_publication_policy():
+    """Load the shared publication passthrough policy from the deep-research skill."""
     candidates = []
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
@@ -48,7 +48,7 @@ def load_quality_filter():
     raise RuntimeError("Could not locate deep-research/scripts/filter_publications.py")
 
 
-QUALITY_FILTER = load_quality_filter()
+PUBLICATION_POLICY = load_publication_policy()
 
 
 def search_semantic_scholar(query: str, limit: int = 10) -> list[dict]:
@@ -81,8 +81,8 @@ def search_semantic_scholar(query: str, limit: int = 10) -> list[dict]:
     return []
 
 
-def normalize_for_quality_filter(paper: dict) -> dict:
-    """Add common fields expected by the shared quality filter."""
+def normalize_for_publication_policy(paper: dict) -> dict:
+    """Add common fields expected by the shared publication policy."""
     record = dict(paper)
     external_ids = record.get("externalIds", {}) or {}
     record["doi"] = record.get("doi") or external_ids.get("DOI", "")
@@ -91,10 +91,10 @@ def normalize_for_quality_filter(paper: dict) -> dict:
     return record
 
 
-def apply_quality_filter(papers: list[dict]) -> tuple[list[dict], dict]:
-    """Apply the user's venue/publisher quality policy to candidate papers."""
-    normalized = [normalize_for_quality_filter(paper) for paper in papers]
-    return QUALITY_FILTER(normalized, strict_target_venues=False, allow_preprints=True)
+def apply_publication_policy(papers: list[dict]) -> tuple[list[dict], dict]:
+    """Keep all candidate papers for relevance-based novelty assessment."""
+    normalized = [normalize_for_publication_policy(paper) for paper in papers]
+    return PUBLICATION_POLICY(normalized)
 
 
 def format_paper(paper: dict) -> str:
@@ -173,16 +173,15 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
         print(f"Round {round_num}/{max_rounds}: Searching \"{query}\"")
 
         raw_papers = search_semantic_scholar(query, limit=result_limit)
-        papers, quality_report = apply_quality_filter(raw_papers)
+        papers, policy_report = apply_publication_policy(raw_papers)
 
         if not raw_papers:
             print("  No results found.")
             print()
             continue
-        if quality_report["rejected"]:
-            print(f"  Quality filter rejected {quality_report['rejected']} of {quality_report['total']} results.")
+        print(f"  Publication policy kept {policy_report['kept']} of {policy_report['total']} results.")
         if not papers:
-            print("  No results remain after quality filtering.")
+            print("  No results remain after publication policy processing.")
             print()
             continue
 
@@ -208,9 +207,8 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
                 if t and len(t.split()) >= 3:
                     search_queries.append(t[:80])
 
-    # Rank by relevance (citation count as proxy)
-    ranked = sorted(all_papers_seen.values(),
-                    key=lambda p: p.get("citationCount", 0), reverse=True)
+    # Preserve API retrieval order as the default relevance signal.
+    ranked = list(all_papers_seen.values())
 
     result = {
         "idea": idea,
@@ -220,7 +218,7 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
         "total_papers_found": len(all_papers_seen),
         "rounds_used": len(queries_used),
         "queries_used": queries_used,
-        "most_cited_similar": [
+        "top_retrieved_similar": [
             {
                 "title": p.get("title", ""),
                 "year": p.get("year"),
@@ -236,13 +234,13 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
         "convergence_state": {
             "current_stable_kernel": idea[:240],
             "open_but_bounded_questions": [
-                "Decide whether any high-quality result has high or exact overlap with the idea"
+                "Decide whether any topic-relevant result has high or exact overlap with the idea"
             ],
             "decision_log": [
-                "Collected quality-filtered novelty evidence; final novelty verdict still requires agent review"
+                "Collected unrestricted novelty evidence; final novelty verdict still requires agent review"
             ],
-            "freeze_criteria": "Freeze novelty search when the top quality-filtered overlaps are classified and no new query can change the verdict.",
-            "next_narrowing_step": "Classify overlap for the most similar quality-filtered papers and choose novel, incremental, not_novel, or unclear.",
+            "freeze_criteria": "Freeze novelty search when the top topic-relevant overlaps are classified and no new query can change the verdict.",
+            "next_narrowing_step": "Classify overlap for the most similar topic-relevant papers and choose novel, incremental, not_novel, or unclear.",
         },
     }
 
@@ -251,13 +249,13 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
     print(f"Total unique papers found: {len(all_papers_seen)}")
     print(f"Rounds used: {len(queries_used)}/{max_rounds}")
     print()
-    print("Most cited similar papers:")
+    print("Top retrieved similar papers:")
     for i, p in enumerate(ranked[:5], 1):
         print(f"  {i}. [{p.get('year', '?')}] {p.get('title', '?')} "
               f"(citations: {p.get('citationCount', 0)})")
     print()
     print("NOTE: This script is evidence-only.")
-    print("Review high-quality overlaps, then produce the convergence closure block.")
+    print("Review topic-relevant overlaps, then produce the convergence closure block.")
     print("=" * 60)
 
     return result

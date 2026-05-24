@@ -44,16 +44,15 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_
   --api-key "$(grep S2_API_Key $HOME/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')"
 ```
 
-Before adding any candidate from search output, apply the user venue quality filter:
+Before adding any candidate from search output, optionally run the publication passthrough to normalize JSONL:
 
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
   --input candidates_raw.jsonl \
   --output candidates_filtered.jsonl \
-  --report quality_filter_report.json \
-  --allow-preprints
+  --report publication_policy_report.json
 ```
-Use `--strict-target-venues` only when the user asks for target-venue-only citation candidates. Otherwise, hard-block low-quality sources and rank by venue tier/relevance.
+This keeps all candidates. Select citations by relevance to the claim, not by venue or publisher.
 
 ### Harvest missing citations automatically
 ```bash
@@ -79,8 +78,8 @@ Based on AI-Scientist's 20-round citation harvesting loop. For each round:
 1. Read the current `.tex` draft
 2. Identify the most important missing citation
 3. Search Semantic Scholar via script
-4. Apply the venue quality filter to candidate papers
-5. Select the most relevant paper from filtered results
+4. Keep all candidate papers available
+5. Select the most relevant paper from the results
 6. Extract BibTeX and generate a clean key (`lastNameYearWord`)
 7. Append to `.bib` (skip if key exists)
 8. Insert `\cite{key}` at the appropriate location
@@ -89,7 +88,6 @@ Based on AI-Scientist's 20-round citation harvesting loop. For each round:
 **Key rules:**
 - DO NOT add a citation that already exists
 - Only add citations found via API — never fabricate
-- Never add MDPI, blocked low-quality venues, or predatory-publisher matches as citations
 - Cite broadly — not just popular papers
 - Do not copy verbatim from prior literature
 - Tag each added citation by purpose when possible: core related work, bridge method, baseline, dataset/protocol, background, or reviewer-requested
@@ -102,7 +100,7 @@ Run `validate_citations.py` to catch all issues before compilation. Fix any repo
 ## Action: `add` — Add Specific Paper
 
 Search Semantic Scholar for the paper, extract BibTeX, clean the key, append to `.bib`.
-If search returns multiple candidates, filter them first and add only candidates that pass the user venue quality policy.
+If search returns multiple candidates, choose by title/abstract/claim relevance rather than source type.
 
 BibTeX key format: `firstAuthorLastNameYearFirstContentWord` (e.g., `vaswani2017attention`)
 
