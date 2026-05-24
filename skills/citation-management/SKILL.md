@@ -13,6 +13,14 @@ Manage the full lifecycle of citations in a LaTeX paper.
 - `$0` — Action: `harvest`, `validate`, `add`, `format`
 - `$1` — Path to `.tex` or `.bib` file
 
+## Planning Context
+
+When citations support an active paper project, read
+`${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+and the Planning with Files bridge before adding or removing citation themes.
+Log added citations, excluded low-quality sources, and validation results to the
+active planning files when available.
+
 ## Scripts
 
 ### Validate citations (check all cite keys resolve)

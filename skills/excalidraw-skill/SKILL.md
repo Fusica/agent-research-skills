@@ -275,6 +275,9 @@ Both are normalized to tuples automatically.
 ## References
 
 - `references/cheatsheet.md`: Complete MCP tool list (26 tools) + REST API endpoints + payload shapes.
+- When diagrams support a paper, read the research convergence policy and
+  Planning with Files bridge before adding scope or claims:
+  `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Related Skills
 - See also: [figure-generation](../figure-generation/), [algorithm-design](../algorithm-design/), [slide-generation](../slide-generation/)

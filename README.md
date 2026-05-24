@@ -72,3 +72,4 @@ git push
 - The bundle was copied from the local Codex user-level skills directory and lightly normalized for Codex paths.
 - Legacy upstream skill-path references in bundled Markdown have been rewritten to `${CODEX_HOME:-$HOME/.codex}/skills`.
 - Some optional external tools mentioned by upstream skills may still require separate installation or a user-provided path.
+- Agent research convergence state is persistent only after it is written to project files. When a project uses Planning with Files, the skills should read and update the active `task_plan.md`, `findings.md`, and `progress.md` via the bridge policy in `skills/paper-assembly/references/planning-with-files-bridge.md`.

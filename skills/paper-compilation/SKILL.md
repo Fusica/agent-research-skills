@@ -12,6 +12,14 @@ Compile a LaTeX paper to PDF with error detection and correction.
 
 - `$ARGUMENTS` — Path to the main `.tex` file
 
+## Planning Context
+
+When compiling an active paper project, read
+`${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+and the Planning with Files bridge before deciding whether compile warnings are
+blocking. Log compile commands, warnings, page counts, and fixes to the active
+planning files when available.
+
 ## Scripts
 
 ### Compile paper

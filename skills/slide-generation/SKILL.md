@@ -16,6 +16,7 @@ Convert a completed paper into presentation slides or poster.
 
 - Slide templates and layout patterns: `${CODEX_HOME:-$HOME/.codex}/skills/slide-generation/references/slide-templates.md`
 - Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Scripts
 

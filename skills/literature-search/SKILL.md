@@ -12,6 +12,14 @@ Search multiple academic databases to find relevant papers.
 
 - `$ARGUMENTS` — The search query (natural language)
 
+## Planning Context
+
+Before broad literature search for an active paper project, read the Planning
+with Files state and convergence policy:
+`${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`.
+Use the active plan to choose search scope and write durable findings back to
+`findings.md` / `progress.md` when available.
+
 ## Scripts
 
 ### Semantic Scholar (primary — best for ML/AI, has BibTeX)

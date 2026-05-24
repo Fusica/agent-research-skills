@@ -10,6 +10,9 @@ hypothesis, and evidence matrix from `paper-assembly/references/research-converg
 - `paper_route`: one primary route and at most one secondary route.
 - `venue_hypothesis`: candidate venue cluster or selected target venue.
 - `evidence_matrix`: claims mapped to experiments, metrics, figures, and tables.
+- Planning with Files state when available: active `task_plan.md`, `findings.md`,
+  and `progress.md`, resolved using
+  `paper-assembly/references/planning-with-files-bridge.md`.
 
 If any input is missing, write only a bounded plan and request or infer the
 minimum missing state. Do not widen the paper scope during writing.
@@ -56,4 +59,5 @@ Open But Bounded Questions:
 Decision Log:
 Freeze Criteria:
 Next Narrowing Step:
+Planning Files Updated:
 ```

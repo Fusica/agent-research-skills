@@ -21,6 +21,19 @@ converging toward a publishable ML/robotics paper.
   broadly; experiment design and writing must eventually choose a paper type
   and venue cluster.
 
+## Persistence and Planning Files
+
+The convergence state is durable only when written to disk. A closure block in a
+chat response or skill output is not enough. When the project uses Planning with
+Files, read and update the active `task_plan.md`, `findings.md`, and
+`progress.md` before and after substantive research work. Use
+`paper-assembly/references/planning-with-files-bridge.md` for the exact plan
+resolution and synchronization rules.
+
+If no planning files exist, write the convergence state to a paper checkpoint
+file or create Planning with Files state before running a long multi-step
+pipeline.
+
 ## Progressive Convergence Ladder
 
 1. Exploration: collect high-quality ideas, papers, methods, and analogies
@@ -61,6 +74,8 @@ Next Narrowing Step:
 - Decision Log records what was added, removed, or frozen this round.
 - Freeze Criteria explains when exploration stops.
 - Next Narrowing Step names exactly one next decision or experiment.
+- Planning Files Updated records which persistent files now contain this state,
+  or explains why no persistent update was made.
 
 ## Anti-Drift Rules
 

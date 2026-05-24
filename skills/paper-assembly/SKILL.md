@@ -16,6 +16,7 @@ Orchestrate the entire paper pipeline end-to-end with state management and check
 
 - Orchestration patterns and state management: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/orchestration-patterns.md`
 - Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Planning with Files bridge: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/planning-with-files-bridge.md`
 
 ## Scripts
 
@@ -30,9 +31,10 @@ Scans paper directory, checks 9 pipeline phases, reports missing artifacts, sugg
 ## Workflow
 
 ### Step 1: Assess Current State
-1. Scan the paper directory for existing artifacts
-2. Identify which phases are complete vs pending
-3. Build a dependency graph of remaining work
+1. Resolve and read active Planning with Files state when present
+2. Scan the paper directory for existing artifacts
+3. Identify which phases are complete vs pending
+4. Build a dependency graph of remaining work
 
 ### Step 2: Execute Pipeline Phases
 Run phases in dependency order:
@@ -57,6 +59,7 @@ After each phase completes:
 2. Propagate results to downstream phases
 3. Update the progress checkpoint file
 4. Update the convergence state: stable kernel, bounded questions, decision log, freeze criteria, and next narrowing step
+5. Mirror phase status, findings, and verification results into active Planning with Files files when present
 
 ### Step 4: Quality Gates
 Before proceeding to the next phase:

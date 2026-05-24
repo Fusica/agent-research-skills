@@ -48,6 +48,7 @@ Runs checks then applies clean_latex.py fixes, writing to `main_fixed.tex`.
 
 - Venue specs, project structure, packages, commands: `${CODEX_HOME:-$HOME/.codex}/skills/latex-formatting/references/venue-templates.md`
 - Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Action: `setup`
 Create the project directory structure and main.tex for the specified venue. Use the template from `references/venue-templates.md`.
