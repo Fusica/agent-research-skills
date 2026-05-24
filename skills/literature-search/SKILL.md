@@ -62,6 +62,9 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_cross
 
 Key flags: `--bibtex` (output .bib format), `--rows N`
 
+### Google Scholar (manual/browser cross-check only)
+Google Scholar does not provide a stable official public API. Do not use it as the default scripted backend. Use it only for browser/manual spot checks: exact-title lookup, author profile inspection, citation trail sanity checks, or cases where Semantic Scholar/OpenAlex/CrossRef disagree.
+
 ### Download arXiv Source (get .tex files)
 ```bash
 python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/download_arxiv_source.py \
@@ -82,11 +85,12 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.p
 2. Run Semantic Scholar search (primary) with expanded queries
 3. Run arXiv for very recent preprints (< 3 months)
 4. Optionally run OpenAlex for broader coverage
-5. Merge and deduplicate results to `merged_raw.jsonl`
-6. Run `filter_publications.py` before ranking or presenting results
-7. Rank by: citations (0.25) + recency (0.25) + priority_tier/venue quality (0.3) + relevance (0.2)
-8. Present structured results table and mention how many records were excluded by `quality_filter_report.json`
-9. If a stable kernel or venue hypothesis exists, label each result as core evidence, bridge evidence, baseline candidate, or background
+5. Use Google Scholar only as a manual/browser cross-check when structured sources miss or disagree
+6. Merge and deduplicate results to `merged_raw.jsonl`
+7. Run `filter_publications.py` before ranking or presenting results
+8. Rank by: citations (0.25) + recency (0.25) + priority_tier/venue quality (0.3) + relevance (0.2)
+9. Present structured results table and mention how many records were excluded by `quality_filter_report.json`
+10. If a stable kernel or venue hypothesis exists, label each result as core evidence, bridge evidence, baseline candidate, or background
 
 ## Venue Quality Tiers
 

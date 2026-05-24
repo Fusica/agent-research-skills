@@ -70,5 +70,5 @@ git push
 ## Notes
 
 - The bundle was copied from the local Codex user-level skills directory and lightly normalized for Codex paths.
-- Legacy `~/.claude/skills` references in bundled Markdown have been rewritten to `${CODEX_HOME:-$HOME/.codex}/skills`.
+- Legacy upstream skill-path references in bundled Markdown have been rewritten to `${CODEX_HOME:-$HOME/.codex}/skills`.
 - Some optional external tools mentioned by upstream skills may still require separate installation or a user-provided path.

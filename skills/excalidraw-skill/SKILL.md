@@ -28,10 +28,7 @@ If neither works, tell the user:
 > 2. Build: `npm ci && npm run build`
 > 3. Start canvas: `HOST=0.0.0.0 PORT=3000 npm run canvas`
 > 4. Open `http://localhost:3000` in a browser
-> 5. (Recommended) Install the MCP server for the best experience:
->    ```
->    claude mcp add excalidraw -s user -e EXPRESS_SERVER_URL=http://localhost:3000 -- node /path/to/mcp_excalidraw/dist/index.js
->    ```
+> 5. (Recommended) Configure the Excalidraw MCP server in Codex with `EXPRESS_SERVER_URL=http://localhost:3000` and command `node /path/to/mcp_excalidraw/dist/index.js` for the best experience.
 
 ### MCP vs REST API Quick Reference
 

@@ -132,10 +132,10 @@ For searching recent papers not yet published at conferences. Mark citations wit
 | `bibtex_manager.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output`, `--keys-only` |
 | `compile_report.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--topic-dir` |
 
-### WebFetch Mode (no Bash)
-1. **Paper discovery**: `WebSearch` + `WebFetch` to query Semantic Scholar/arXiv APIs
-2. **Paper reading**: `WebFetch` on ar5iv HTML or `Read` tool on downloaded PDFs
-3. **Writing**: `Write` tool for JSONL, notes, report files
+### URL/Browser Mode (no Bash)
+1. **Paper discovery**: use web search or direct API URLs for Semantic Scholar/arXiv/OpenAlex
+2. **Paper reading**: use ar5iv HTML, downloaded PDFs, or the available local PDF reader
+3. **Writing**: save JSONL, notes, and report files in the active workspace
 
 ## 6-Phase Workflow
 
@@ -143,7 +143,7 @@ For searching recent papers not yet published at conferences. Mark citations wit
 Search the **latest** conference proceedings and preprints to understand current trends.
 1. Write `phase1_frontier/paper_finder_config.yaml` targeting latest 1-2 years
 2. Run paper_finder scrape
-3. WebSearch for latest accepted paper lists
+3. Search the web for latest accepted paper lists
 4. Identify trending directions, key breakthroughs
 → Output: `phase1_frontier/frontier.md`, `phase1_frontier/search_results/`
 
@@ -163,7 +163,7 @@ Build a comprehensive landscape with broader time range. Target **35-80 papers**
 
 1. Select 8-15 papers from paper_db.jsonl with rationale → write `phase3_deep_dive/selection.md`
 2. Download PDFs: `python download_papers.py --jsonl paper_db.jsonl --output-dir phase3_deep_dive/papers/ --sort-by-citations --max-downloads 15`
-3. For EACH selected paper, read the full text (PDF via `Read` or HTML via `WebFetch` on ar5iv)
+3. For EACH selected paper, read the full text (PDF via the local PDF reader or HTML via ar5iv/browser fetch)
 4. Write detailed structured notes per paper (see note-format.md template): problem, contributions, methodology, experiments, limitations, connections
 5. Write ALL notes → `phase3_deep_dive/deep_dive.md`
 
@@ -176,7 +176,7 @@ Build a comprehensive landscape with broader time range. Target **35-80 papers**
 **This phase is MANDATORY.** You must survey the open-source ecosystem.
 
 1. Extract GitHub URLs from papers read in Phase 3
-2. WebSearch for implementations: "site:github.com {method name}", "site:paperswithcode.com {topic}"
+2. Search the web for implementations: "site:github.com {method name}", "site:paperswithcode.com {topic}"
 3. For each repo found: record URL, stars, language, last updated, documentation quality
 4. Search for related benchmarks and datasets
 5. Write → `phase4_code/code_repos.md` (must contain ≥3 repositories)

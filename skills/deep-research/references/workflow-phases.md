@@ -37,7 +37,7 @@ Identify the **latest breakthroughs** and trending directions. Understand what t
 
 2. **Run paper_finder if available**: `python /path/to/paper_finder.py --mode scrape --config phase1_frontier/paper_finder_config.yaml`
 
-3. **WebSearch for accepted papers**: "{topic} NeurIPS 2025 accepted", "{topic} ICML 2025 oral"
+3. **Web search for accepted papers**: "{topic} NeurIPS 2025 accepted", "{topic} ICML 2025 oral"
 
 4. **Apply venue quality filter** to any JSONL search results before writing notes:
    ```
@@ -145,7 +145,7 @@ Write selection with rationale → `phase3_deep_dive/selection.md`
 
 1. **Download PDFs**: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/download_papers.py --jsonl paper_db.jsonl --output-dir phase3_deep_dive/papers/ --sort-by-citations --max-downloads 15`
 
-2. **Read**: `Read phase3_deep_dive/papers/{file}.pdf` or `WebFetch https://ar5iv.labs.arxiv.org/html/{arxiv_id}`
+2. **Read**: use the local PDF reader for `phase3_deep_dive/papers/{file}.pdf` or fetch `https://ar5iv.labs.arxiv.org/html/{arxiv_id}` in a browser/web tool
 
 3. **Extract structured notes** (per paper):
    - Problem statement
@@ -175,7 +175,7 @@ Map the open-source ecosystem: implementations, frameworks, benchmarks, datasets
 
 ### Steps
 1. Extract GitHub URLs from deep-dive papers
-2. WebSearch: "site:github.com {method name}", "site:paperswithcode.com {topic}"
+2. Web search: "site:github.com {method name}", "site:paperswithcode.com {topic}"
 3. Evaluate: Stars, recency, documentation quality
 4. Write → `phase4_code/code_repos.md` (must contain ≥3 repositories)
 
