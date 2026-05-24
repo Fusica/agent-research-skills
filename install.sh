@@ -172,10 +172,7 @@ rewrite_skill_paths() {
       continue
     fi
     if grep -q '\${CODEX_HOME:-\$HOME/.codex}/skills\|~/.codex/skills' "$file"; then
-      sed -i \
-        -e "s|\${CODEX_HOME:-\$HOME/.codex}/skills|$escaped_target|g" \
-        -e "s|~/.codex/skills|$escaped_target|g" \
-        "$file"
+      perl -0pi -e 's|\$\{CODEX_HOME:-\$HOME/\.codex\}/skills|'"$escaped_target"'|g; s|~/.codex/skills|'"$escaped_target"'|g' "$file"
       rewritten=$((rewritten + 1))
     fi
   done < <(find "$root" -type f -print0)
