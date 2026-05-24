@@ -14,17 +14,15 @@ Convert a completed paper into presentation slides or poster.
 
 ## References
 
-- Slide templates and layout patterns: `${CODEX_HOME:-$HOME/.codex}/skills/slide-generation/references/slide-templates.md`
-- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Slide templates and layout patterns: `~/.claude/skills/slide-generation/references/slide-templates.md`
 
 ## Scripts
 
 ### Extract paper elements for slides
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/slide-generation/scripts/extract_paper_elements.py --tex main.tex --output slides_skeleton.tex
-python ${CODEX_HOME:-$HOME/.codex}/skills/slide-generation/scripts/extract_paper_elements.py --tex main.tex --format json --output elements.json
-python ${CODEX_HOME:-$HOME/.codex}/skills/slide-generation/scripts/extract_paper_elements.py --tex main.tex --output slides.tex --theme metropolis
+python ~/.claude/skills/slide-generation/scripts/extract_paper_elements.py --tex main.tex --output slides_skeleton.tex
+python ~/.claude/skills/slide-generation/scripts/extract_paper_elements.py --tex main.tex --format json --output elements.json
+python ~/.claude/skills/slide-generation/scripts/extract_paper_elements.py --tex main.tex --output slides.tex --theme metropolis
 ```
 
 Parses .tex, extracts title/authors/sections/equations/figures/tables, generates Beamer skeleton.
@@ -41,7 +39,6 @@ From the paper, extract:
 6. **Main results** (best numbers from Results section)
 
 ### Step 2: Design Slide Structure
-Choose the story from the paper's stable kernel, paper route, venue hypothesis, venue profile, and evidence matrix. Do not turn a focused paper into a broader survey talk unless requested.
 Standard oral presentation flow (~15-20 slides):
 
 | Slide # | Content | Source Section |
@@ -102,8 +99,6 @@ For poster sessions, use a multi-column layout:
 - Include slide numbers
 - Use consistent color scheme matching the paper's figures
 - Presentation should be self-contained (understandable without reading the paper)
-- Keep claim strength aligned with the final manuscript evidence matrix
-- End with a slide-deck closure: claims presented, claims softened or omitted, venue-route fit, bounded remaining issues, and the next narrowing step
 
 ## Related Skills
 - Upstream: [paper-compilation](../paper-compilation/), [figure-generation](../figure-generation/)

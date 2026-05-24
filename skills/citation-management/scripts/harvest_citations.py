@@ -13,10 +13,8 @@ Usage:
 """
 
 import argparse
-import importlib.util
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import time
@@ -25,28 +23,6 @@ import urllib.parse
 import urllib.request
 
 S2_API = "https://api.semanticscholar.org/graph/v1/paper/search"
-
-
-def load_publication_policy():
-    """Load the shared publication passthrough policy from the deep-research skill."""
-    candidates = []
-    codex_home = os.environ.get("CODEX_HOME")
-    if codex_home:
-        candidates.append(Path(codex_home) / "skills/deep-research/scripts/filter_publications.py")
-    candidates.append(Path.home() / ".codex/skills/deep-research/scripts/filter_publications.py")
-    candidates.append(Path(__file__).resolve().parents[2] / "deep-research/scripts/filter_publications.py")
-
-    for path in candidates:
-        if path.exists():
-            spec = importlib.util.spec_from_file_location("filter_publications", path)
-            if spec and spec.loader:
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                return module.filter_records
-    raise RuntimeError("Could not locate deep-research/scripts/filter_publications.py")
-
-
-PUBLICATION_POLICY = load_publication_policy()
 
 CLAIM_PATTERNS = [
     r"(?:has been shown|have been shown|was shown|were shown|is known|are known)",
@@ -138,22 +114,6 @@ def search_semantic_scholar(query: str, limit: int = 3, api_key: str = "") -> li
         return []
 
 
-def normalize_for_publication_policy(paper: dict) -> dict:
-    """Add common fields expected by the shared publication policy."""
-    record = dict(paper)
-    ext_ids = record.get("externalIds", {}) or {}
-    record["doi"] = record.get("doi") or ext_ids.get("DOI", "")
-    record["arxiv_id"] = record.get("arxiv_id") or ext_ids.get("ArXiv", "")
-    record["source"] = record.get("source") or "semantic_scholar"
-    return record
-
-
-def apply_publication_policy(papers: list[dict]) -> tuple[list[dict], dict]:
-    """Keep all citation candidates for relevance-based selection."""
-    normalized = [normalize_for_publication_policy(paper) for paper in papers]
-    return PUBLICATION_POLICY(normalized)
-
-
 def make_bibtex_key(paper: dict) -> str:
     """Generate a BibTeX key from a Semantic Scholar paper."""
     authors = paper.get("authors", [])
@@ -243,19 +203,12 @@ def main():
 
     for i, claim in enumerate(claims[:rounds]):
         print(f"\n[{i+1}/{rounds}] Searching for: {claim['query'][:60]}...", file=sys.stderr)
-        raw_papers = search_semantic_scholar(claim["query"], limit=3, api_key=args.api_key)
-        papers, policy_report = apply_publication_policy(raw_papers)
+        papers = search_semantic_scholar(claim["query"], limit=3, api_key=args.api_key)
         time.sleep(1)  # Rate limiting
 
-        if not raw_papers:
-            if args.verbose:
-                print(f"  No results found.", file=sys.stderr)
-            continue
-        if args.verbose:
-            print(f"  Publication policy kept {policy_report['kept']} of {policy_report['total']} results.", file=sys.stderr)
         if not papers:
             if args.verbose:
-                print("  No results remain after publication policy processing.", file=sys.stderr)
+                print(f"  No results found.", file=sys.stderr)
             continue
 
         # Pick the most cited result

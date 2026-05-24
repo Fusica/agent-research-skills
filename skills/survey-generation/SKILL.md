@@ -16,24 +16,20 @@ Generate complete academic survey papers with structured outline, RAG-based writ
 
 ### Literature search
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
+python ~/.claude/skills/deep-research/scripts/search_semantic_scholar.py \
   --query "relevant search query" --max-results 50
 ```
 
 ## References
 
-- Survey prompts (outline, writing, citation, coherence): `${CODEX_HOME:-$HOME/.codex}/skills/survey-generation/references/survey-prompts.md`
-- Publication relevance policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Survey prompts (outline, writing, citation, coherence): `~/.claude/skills/survey-generation/references/survey-prompts.md`
 
 ## Workflow (from AutoSurvey)
 
 ### Step 1: Collect Papers
 1. Search Semantic Scholar / arXiv for papers on the topic
-2. Merge raw results to `merged_raw.jsonl`
-3. Run `filter_publications.py` only as a keep-all compatibility passthrough
-4. Collect 50-200 topic-relevant papers with titles and abstracts
-5. Select and cluster papers by semantic relevance to the survey topic
+2. Collect 50-200 relevant papers with titles and abstracts
+3. Filter by relevance and citation count
 
 ### Step 2: Generate Outline (Multi-LLM Parallel)
 1. Generate N rough outlines independently (parallel)
@@ -80,13 +76,11 @@ survey/
 ## Rules
 
 - Only cite papers from the collected paper list — never hallucinate citations
-- Keep all collected sources available; do not exclude by venue, publisher, journal, DOI prefix, domain, or preprint status
 - Each subsection must meet minimum word count
 - No duplicate subsections across sections
 - Citation validation is mandatory before final output
 - Local coherence enhancement must preserve all citations
 - The survey should be comprehensive and logically organized
-- For a survey supporting an original paper, end each major outline/writing round with the convergence closure block and avoid adding themes that do not support the stable kernel
 
 ## Related Skills
 - Upstream: [deep-research](../deep-research/), [literature-search](../literature-search/), [literature-review](../literature-review/)

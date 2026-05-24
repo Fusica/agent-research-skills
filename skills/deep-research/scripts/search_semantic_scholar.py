@@ -5,7 +5,8 @@ Self-contained: uses only stdlib (urllib, json).
 
 Usage:
     python search_semantic_scholar.py --query "long horizon reasoning" --max-results 100
-    python search_semantic_scholar.py --query "protein language model" --year-range 2020-2026
+    python search_semantic_scholar.py --query "protein language model" --min-citations 10 --year-range 2020-2026
+    python search_semantic_scholar.py --query "LLM agent planning" --venue NeurIPS ICML --max-results 50
 """
 
 import argparse
@@ -19,10 +20,68 @@ S2_API = "https://api.semanticscholar.org/graph/v1"
 FIELDS = "title,authors,abstract,year,venue,citationCount,externalIds,url,referenceCount,publicationDate"
 SEARCH_LIMIT = 100  # S2 max per request
 
+# Top-tier AI/ML conferences (peer-reviewed)
+TOP_CONFERENCES = {
+    # ML core
+    "NeurIPS", "ICML", "ICLR",
+    # NLP
+    "ACL", "EMNLP", "NAACL", "EACL", "COLING",
+    # AI general
+    "AAAI", "IJCAI",
+    # Vision (occasionally relevant)
+    "CVPR", "ICCV", "ECCV",
+    # IR / data mining
+    "KDD", "WWW", "SIGIR",
+    # Robotics / agents
+    "ICRA", "CoRL",
+}
+
+# Normalized aliases for S2 venue matching
+VENUE_ALIASES = {
+    "neurips": "NeurIPS", "nips": "NeurIPS",
+    "icml": "ICML",
+    "iclr": "ICLR",
+    "acl": "ACL",
+    "emnlp": "EMNLP",
+    "naacl": "NAACL",
+    "eacl": "EACL",
+    "coling": "COLING",
+    "aaai": "AAAI",
+    "ijcai": "IJCAI",
+    "cvpr": "CVPR",
+    "iccv": "ICCV",
+    "eccv": "ECCV",
+    "kdd": "KDD",
+    "www": "WWW",
+    "sigir": "SIGIR",
+    "icra": "ICRA",
+    "corl": "CoRL",
+}
+
+
+def is_peer_reviewed(venue: str) -> bool:
+    """Check if a paper's venue is a recognized peer-reviewed conference."""
+    if not venue:
+        return False
+    venue_lower = venue.lower()
+    for alias in VENUE_ALIASES:
+        if alias in venue_lower:
+            return True
+    # Also check for "journal" or "transactions" as peer-reviewed
+    if any(kw in venue_lower for kw in ("journal", "transactions", "review")):
+        return True
+    return False
+
 
 def normalize_venue(venue: str) -> str:
-    """Return a whitespace-normalized venue string without ranking or filtering."""
-    return " ".join((venue or "").split())
+    """Normalize venue name to canonical form."""
+    if not venue:
+        return ""
+    venue_lower = venue.lower()
+    for alias, canonical in VENUE_ALIASES.items():
+        if alias in venue_lower:
+            return canonical
+    return venue
 
 
 def s2_request(url: str, api_key: str | None = None) -> dict:
@@ -65,7 +124,6 @@ def parse_paper(data: dict) -> dict | None:
 
     external_ids = data.get("externalIds", {}) or {}
     arxiv_id = external_ids.get("ArXiv", "")
-    doi = external_ids.get("DOI", "")
 
     pdf_url = ""
     if arxiv_id:
@@ -74,10 +132,10 @@ def parse_paper(data: dict) -> dict | None:
     abstract = data.get("abstract", "") or ""
 
     venue = data.get("venue", "") or ""
+    reviewed = is_peer_reviewed(venue)
 
     return {
         "paperId": data.get("paperId", ""),
-        "doi": doi,
         "arxiv_id": arxiv_id,
         "title": data["title"],
         "authors": authors,
@@ -85,7 +143,7 @@ def parse_paper(data: dict) -> dict | None:
         "year": data.get("year"),
         "venue": venue,
         "venue_normalized": normalize_venue(venue),
-        "peer_reviewed": None,
+        "peer_reviewed": reviewed,
         "citationCount": data.get("citationCount", 0) or 0,
         "referenceCount": data.get("referenceCount", 0) or 0,
         "url": data.get("url", ""),
@@ -99,15 +157,26 @@ def search_papers(
     query: str,
     max_results: int = 100,
     year_range: str | None = None,
+    min_citations: int = 0,
+    venue_filter: list[str] | None = None,
+    peer_reviewed_only: bool = False,
     api_key: str | None = None,
 ) -> list[dict]:
-    """Search for papers and return deduplicated results without source filtering."""
+    """Search for papers and return deduplicated results.
+
+    If peer_reviewed_only=True, only returns papers from recognized conferences/journals.
+    This fetches more results from S2 to compensate for filtering.
+    """
     all_papers = []
     seen_ids = set()
 
+    # When filtering peer-reviewed, fetch more to compensate
+    fetch_multiplier = 3 if peer_reviewed_only else 1
+    fetch_max = max_results * fetch_multiplier
+
     offset = 0
-    while len(all_papers) < max_results:
-        limit = min(SEARCH_LIMIT, max_results - len(all_papers))
+    while offset < fetch_max and len(all_papers) < max_results:
+        limit = min(SEARCH_LIMIT, fetch_max - offset)
         params = {
             "query": query,
             "offset": offset,
@@ -142,6 +211,20 @@ def search_papers(
             if pid in seen_ids:
                 continue
             seen_ids.add(pid)
+
+            # Citation filter
+            if paper["citationCount"] < min_citations:
+                continue
+
+            # Venue filter (explicit list)
+            if venue_filter:
+                paper_venue = (paper.get("venue", "") or "").lower()
+                if not any(v.lower() in paper_venue for v in venue_filter):
+                    continue
+
+            # Peer-reviewed filter
+            if peer_reviewed_only and not paper.get("peer_reviewed", False):
+                continue
 
             all_papers.append(paper)
 
@@ -202,15 +285,41 @@ def get_references(paper_id: str, max_results: int = 50, api_key: str | None = N
 
 
 def main():
+    # Handle --list-conferences early (no other args needed)
+    if "--list-conferences" in sys.argv:
+        print("Recognized top conferences:")
+        for conf in sorted(TOP_CONFERENCES):
+            print(f"  {conf}")
+        sys.exit(0)
+
     parser = argparse.ArgumentParser(description="Search Semantic Scholar and output JSONL")
     parser.add_argument("--query", required=True, help="Search keywords")
     parser.add_argument("--max-results", type=int, default=100, help="Max papers to return")
+    parser.add_argument("--min-citations", type=int, default=0, help="Minimum citation count")
     parser.add_argument("--year-range", help="Year range filter (e.g. 2020-2026)")
+    parser.add_argument("--venue", nargs="*", help="Venue filter (e.g. NeurIPS ICML)")
+    parser.add_argument("--peer-reviewed-only", action="store_true",
+                        help="Only return papers from peer-reviewed conferences/journals")
+    parser.add_argument("--top-conferences", action="store_true",
+                        help="Shorthand for --venue with all top AI conferences")
+    parser.add_argument("--list-conferences", action="store_true",
+                        help="Print the list of recognized top conferences and exit")
     parser.add_argument("--api-key", help="S2 API key (optional, increases rate limits)")
     parser.add_argument("--citations-of", help="Get papers citing this paper ID")
     parser.add_argument("--references-of", help="Get papers referenced by this paper ID")
     parser.add_argument("--output", "-o", help="Output file (default: stdout)")
     args = parser.parse_args()
+
+    if args.list_conferences:
+        print("Recognized top conferences:")
+        for conf in sorted(TOP_CONFERENCES):
+            print(f"  {conf}")
+        sys.exit(0)
+
+    # --top-conferences expands to venue filter with all top conferences
+    venue_filter = args.venue
+    if args.top_conferences:
+        venue_filter = list(TOP_CONFERENCES)
 
     if args.citations_of:
         papers = get_citations(args.citations_of, args.max_results, args.api_key)
@@ -221,6 +330,9 @@ def main():
             query=args.query,
             max_results=args.max_results,
             year_range=args.year_range,
+            min_citations=args.min_citations,
+            venue_filter=venue_filter,
+            peer_reviewed_only=args.peer_reviewed_only,
             api_key=args.api_key,
         )
 

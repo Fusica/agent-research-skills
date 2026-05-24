@@ -15,24 +15,22 @@ Generate rigorous statistical analysis code with multi-round review.
 
 ## References
 
-- 4-round code review prompts: `${CODEX_HOME:-$HOME/.codex}/skills/data-analysis/references/review-prompts.md`
-- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- 4-round code review prompts: `~/.claude/skills/data-analysis/references/review-prompts.md`
 
 ## Scripts
 
 ### Statistical summary and comparison
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/data-analysis/scripts/stat_summary.py --input results.csv --compare method --metric accuracy --output summary.json
-python ${CODEX_HOME:-$HOME/.codex}/skills/data-analysis/scripts/stat_summary.py --input results.csv --describe
+python ~/.claude/skills/data-analysis/scripts/stat_summary.py --input results.csv --compare method --metric accuracy --output summary.json
+python ~/.claude/skills/data-analysis/scripts/stat_summary.py --input results.csv --describe
 ```
 
 Detects data types, recommends tests, runs comparisons, outputs effect sizes and significance stars. Requires numpy, scipy.
 
 ### Format p-values
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/data-analysis/scripts/format_pvalue.py --values "0.001 0.05 0.23" --format stars
-python ${CODEX_HOME:-$HOME/.codex}/skills/data-analysis/scripts/format_pvalue.py --csv results.csv --column pvalue --format latex
+python ~/.claude/skills/data-analysis/scripts/format_pvalue.py --values "0.001 0.05 0.23" --format stars
+python ~/.claude/skills/data-analysis/scripts/format_pvalue.py --csv results.csv --column pvalue --format latex
 ```
 
 Formats p-values with stars, LaTeX notation, or plain text. Stdlib-only.
@@ -40,7 +38,6 @@ Formats p-values with stars, LaTeX notation, or plain text. Stdlib-only.
 ## Workflow
 
 ### Step 1: Generate Analysis Code
-Before writing analysis code, identify the stable kernel, claim being tested, paper route, venue hypothesis, evidence matrix row, metric, and replication unit.
 Structure the code with these sections:
 1. `# IMPORT` — pandas, numpy, scipy, statsmodels, sklearn
 2. `# LOAD DATA` — Load from original data files
@@ -60,7 +57,6 @@ Structure the code with these sections:
 - Every nominal value must have uncertainty (CI, STD, or p-value)
 - Statistical tests must be appropriate for the data type
 - Results must match actual data — never hallucinate
-- Produce claim-level interpretation for tables/figures, not generic statistics only
 
 ## Allowed Packages
 
@@ -80,13 +76,11 @@ Structure the code with these sections:
 
 ## Rules
 
-- Report p-values only when a valid statistical test is appropriate for the replication unit. Otherwise report route-appropriate uncertainty such as std, bootstrap CI, success-rate interval, per-sequence breakdown, or descriptive evidence.
+- Always report p-values for statistical tests
 - Account for relevant confounding variables
 - Use inherent package functionality (e.g., `formula = "y ~ a * b"` for interactions)
 - Do not manually implement available statistical functions
 - Access dataframes using string-based column names, not integer indices
-- For ML/robotics/CV/RL/embodied AI/LLM-VLM work, choose metrics that match the task and claim: accuracy/mAP/IoU, pose errors, success rate, runtime, robustness, episodes/trials, prompt/model variants, or failure taxonomy.
-- End major analysis rounds with the venue-writing closure block.
 
 ## Related Skills
 - Upstream: [experiment-code](../experiment-code/), [experiment-design](../experiment-design/)

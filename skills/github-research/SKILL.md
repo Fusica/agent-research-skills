@@ -19,15 +19,9 @@ Activate this skill when the user wants to:
 
 This skill systematically discovers, evaluates, and deeply analyzes GitHub repositories related to a research topic. It reads **deep-research** output (paper database, phase reports, code references) and produces an actionable integration blueprint for reusing open-source code.
 
-**Installation**: `${CODEX_HOME:-$HOME/.codex}/skills/github-research/` — scripts, references, and this skill definition.
+**Installation**: `~/.claude/skills/github-research/` — scripts, references, and this skill definition.
 **Output**: `./github-research-output/{slug}/` relative to the current working directory.
 **Input**: A deep-research output directory (containing `paper_db.jsonl`, phase reports, `code_repos.md`, etc.)
-
-## Publication Relevance Dependency
-
-When using paper titles or arXiv IDs to discover repositories, use any topically relevant paper from `paper_db.jsonl`. Do not exclude paper-to-repo seeds by venue, publisher, journal, DOI prefix, domain, or preprint status.
-If a stable kernel, paper route, or evidence matrix exists, rank repositories by their ability to support the needed claims, baselines, protocols, datasets, or reproducibility gaps. Do not expand the code search into unrelated repo ecosystems.
-Use `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md` when GitHub research feeds idea refinement or experiment planning.
 
 ## 6-Phase Pipeline
 
@@ -71,14 +65,14 @@ github-research-output/{slug}/
 
 ## Scripts Reference
 
-All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/`.
+All scripts are Python 3, stdlib-only, located in `~/.claude/skills/github-research/scripts/`.
 
 | Script | Purpose | Key Flags |
 |--------|---------|-----------|
 | `extract_research_refs.py` | Parse deep-research output for GitHub URLs, paper refs, keywords | `--research-dir`, `--output` |
 | `search_github.py` | Search GitHub repos via `gh api` | `--query`, `--language`, `--min-stars`, `--sort`, `--max-results`, `--topic`, `--output` |
 | `search_github_code.py` | Search GitHub code for implementations | `--query`, `--language`, `--filename`, `--max-results`, `--output` |
-| `search_paperswithcode.py` | Search Papers With Code for paper→repo mappings | Prefer `--arxiv-id` from filtered `paper_db.jsonl`; avoid broad `--query` unless explicitly needed |
+| `search_paperswithcode.py` | Search Papers With Code for paper→repo mappings | `--paper-title`, `--arxiv-id`, `--query`, `--output` |
 | `repo_db.py` | JSONL repo database management | subcommands: `merge`, `filter`, `score`, `search`, `tag`, `stats`, `export`, `rank` |
 | `repo_metadata.py` | Fetch detailed metadata via `gh api` | `--repos`, `--input`, `--output`, `--delay` |
 | `clone_repo.py` | Shallow-clone repos for analysis | `--repo`, `--output-dir`, `--depth`, `--branch` |
@@ -105,14 +99,14 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 2. **Extract references from deep-research output**:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/extract_research_refs.py \
+   python ~/.claude/skills/github-research/scripts/extract_research_refs.py \
      --research-dir <deep-research-output-dir> \
      --output github-research-output/$SLUG/phase1_intake/extracted_refs.jsonl
    ```
 
 3. **Review extracted refs**: Read the generated JSONL. Note:
    - GitHub URLs found directly in reports
-   - Paper titles and arxiv IDs from filtered paper databases only (for Papers With Code lookup)
+   - Paper titles and arxiv IDs (for Papers With Code lookup)
    - Research keywords and themes (for GitHub search queries)
 
 4. **Write intake summary**: Create `phase1_intake/intake_summary.md` with:
@@ -136,21 +130,21 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 1. **Search by direct URLs**: Any GitHub URLs from Phase 1 → fetch metadata:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_metadata.py \
+   python ~/.claude/skills/github-research/scripts/repo_metadata.py \
      --repos owner1/name1 owner2/name2 ... \
      --output github-research-output/$SLUG/phase2_discovery/search_results/direct_urls.jsonl
    ```
 
-2. **Search Papers With Code**: For each relevant paper with an arxiv ID. Prefer exact `--arxiv-id`; use broad `--query` when it helps recover repositories for papers without IDs.
+2. **Search Papers With Code**: For each paper with an arxiv ID:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/search_paperswithcode.py \
+   python ~/.claude/skills/github-research/scripts/search_paperswithcode.py \
      --arxiv-id 2401.12345 \
      --output github-research-output/$SLUG/phase2_discovery/search_results/pwc_2401.12345.jsonl
    ```
 
 3. **Search GitHub by keywords** (3-8 queries based on research themes):
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/search_github.py \
+   python ~/.claude/skills/github-research/scripts/search_github.py \
      --query "multi-agent LLM coordination" \
      --min-stars 10 --sort stars --max-results 50 \
      --output github-research-output/$SLUG/phase2_discovery/search_results/gh_query1.jsonl
@@ -158,7 +152,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 4. **Search GitHub code** (for specific implementations):
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/search_github_code.py \
+   python ~/.claude/skills/github-research/scripts/search_github_code.py \
      --query "class MultiAgentOrchestrator" \
      --language python --max-results 30 \
      --output github-research-output/$SLUG/phase2_discovery/search_results/code_query1.jsonl
@@ -166,14 +160,14 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 5. **Fetch READMEs** for repos that lack descriptions:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_readme_fetch.py \
+   python ~/.claude/skills/github-research/scripts/repo_readme_fetch.py \
      --input <repos.jsonl> \
      --output github-research-output/$SLUG/phase2_discovery/search_results/readmes.jsonl
    ```
 
 6. **Merge all results** into master database:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py merge \
+   python ~/.claude/skills/github-research/scripts/repo_db.py merge \
      --inputs github-research-output/$SLUG/phase2_discovery/search_results/*.jsonl \
      --output github-research-output/$SLUG/repo_db.jsonl
    ```
@@ -199,7 +193,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 1. **Enrich metadata** for all repos:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_metadata.py \
+   python ~/.claude/skills/github-research/scripts/repo_metadata.py \
      --input github-research-output/$SLUG/repo_db.jsonl \
      --output github-research-output/$SLUG/repo_db.jsonl \
      --delay 0.5
@@ -207,7 +201,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 2. **Score repos** (quality + activity scores):
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py score \
+   python ~/.claude/skills/github-research/scripts/repo_db.py score \
      --input github-research-output/$SLUG/repo_db.jsonl \
      --output github-research-output/$SLUG/repo_db.jsonl
    ```
@@ -216,20 +210,19 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
    - Direct relevance to research topic
    - Implementation completeness
    - Code quality signals (from README, description)
-   - License, pretrained weights/checkpoints, dataset scripts, benchmark/evaluation scripts, active maintenance, and protocol compatibility with the evidence matrix
    - Update the relevance scores:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py tag \
+   python ~/.claude/skills/github-research/scripts/repo_db.py tag \
      --input github-research-output/$SLUG/repo_db.jsonl \
      --ids owner/name --tags "relevance:0.85"
    ```
 
 4. **Compute composite scores and rank**:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py score \
+   python ~/.claude/skills/github-research/scripts/repo_db.py score \
      --input github-research-output/$SLUG/repo_db.jsonl \
      --output github-research-output/$SLUG/repo_db.jsonl
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py rank \
+   python ~/.claude/skills/github-research/scripts/repo_db.py rank \
      --input github-research-output/$SLUG/repo_db.jsonl \
      --output github-research-output/$SLUG/phase3_filtering/ranked_repos.jsonl \
      --by composite_score
@@ -237,7 +230,7 @@ All scripts are Python 3, stdlib-only, located in `${CODEX_HOME:-$HOME/.codex}/s
 
 5. **Select top repos**: Filter to top 15-30:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/repo_db.py filter \
+   python ~/.claude/skills/github-research/scripts/repo_db.py filter \
      --input github-research-output/$SLUG/phase3_filtering/ranked_repos.jsonl \
      --output github-research-output/$SLUG/phase3_filtering/ranked_repos.jsonl \
      --max-repos 30 --not-archived
@@ -271,28 +264,28 @@ composite_score = relevance * 0.4 + quality * 0.35 + activity * 0.25
 
 2. **Clone each repo** (shallow):
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/clone_repo.py \
+   python ~/.claude/skills/github-research/scripts/clone_repo.py \
      --repo owner/name \
      --output-dir github-research-output/$SLUG/phase4_deep_dive/repos/
    ```
 
 3. **Analyze structure** for each cloned repo:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/analyze_repo_structure.py \
+   python ~/.claude/skills/github-research/scripts/analyze_repo_structure.py \
      --repo-dir github-research-output/$SLUG/phase4_deep_dive/repos/name/ \
      --output github-research-output/$SLUG/phase4_deep_dive/analyses/name_structure.json
    ```
 
 4. **Extract dependencies**:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/extract_dependencies.py \
+   python ~/.claude/skills/github-research/scripts/extract_dependencies.py \
      --repo-dir github-research-output/$SLUG/phase4_deep_dive/repos/name/ \
      --output github-research-output/$SLUG/phase4_deep_dive/analyses/name_deps.json
    ```
 
 5. **Find implementations**: Search for key algorithms/concepts from research:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/find_implementations.py \
+   python ~/.claude/skills/github-research/scripts/find_implementations.py \
      --repo-dir github-research-output/$SLUG/phase4_deep_dive/repos/name/ \
      --patterns "class Transformer" "def forward" "attention" \
      --output github-research-output/$SLUG/phase4_deep_dive/analyses/name_impls.jsonl
@@ -331,7 +324,7 @@ Do NOT just summarize READMEs. You must:
 
 1. **Generate comparison matrix**:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/compare_repos.py \
+   python ~/.claude/skills/github-research/scripts/compare_repos.py \
      --input github-research-output/$SLUG/phase4_deep_dive/analyses/ \
      --output github-research-output/$SLUG/phase5_analysis/comparison.json
    ```
@@ -377,7 +370,7 @@ Do NOT just summarize READMEs. You must:
 
 3. **Compile final report**:
    ```bash
-   python ${CODEX_HOME:-$HOME/.codex}/skills/github-research/scripts/compile_github_report.py \
+   python ~/.claude/skills/github-research/scripts/compile_github_report.py \
      --topic-dir github-research-output/$SLUG/
    ```
 
@@ -403,9 +396,8 @@ Do NOT just summarize READMEs. You must:
 5. **Checkpoint recovery**: Can resume from any phase by checking what outputs exist
 6. **All scripts are stdlib-only Python** — no pip installs needed
 7. **`gh` CLI is required** for GitHub API access (must be authenticated)
-8. **Final closure**: End major repo-search rounds with Current Stable Kernel, repo roles (core / bridge / baseline / background), bounded open questions, freeze criteria, and next narrowing step.
-9. **Deduplication** by `repo_id` (owner/name) across all searches
-10. **Rate limit awareness**: Respect GitHub search API limits (30 req/min)
+8. **Deduplication** by `repo_id` (owner/name) across all searches
+9. **Rate limit awareness**: Respect GitHub search API limits (30 req/min)
 
 ## Error Handling
 
@@ -418,5 +410,5 @@ Do NOT just summarize READMEs. You must:
 ## References
 
 - See `references/phase-guide.md` for detailed phase execution guidance
-- Deep-research skill: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/SKILL.md`
-- Paper database pattern: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py`
+- Deep-research skill: `~/.claude/skills/deep-research/SKILL.md`
+- Paper database pattern: `~/.claude/skills/deep-research/scripts/paper_db.py`

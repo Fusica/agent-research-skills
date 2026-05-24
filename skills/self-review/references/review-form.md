@@ -59,18 +59,7 @@ Below is a description of the questions you will be asked on the review form for
   "Contribution": 3,
   "Overall": 6,
   "Confidence": 4,
-  "Decision": "Accept",
-  "Evidence Coverage": "...",
-  "Venue Fit": "...",
-  "Closure": {
-    "Current Stable Kernel": "...",
-    "Venue/Writing Profile": "...",
-    "Evidence Coverage": "...",
-    "Open But Bounded Questions": ["..."],
-    "Decision Log": ["..."],
-    "Freeze Criteria": "...",
-    "Next Narrowing Step": "..."
-  }
+  "Decision": "Accept"
 }
 ```
 
@@ -97,18 +86,6 @@ NeurIPS acceptance bar: ~5.9/10. Workshop acceptance: ~6.0/10 (60-70% acceptance
 1. **Harsh but fair**: Expects good experiments that lead to insights
 2. **Harsh and critical**: Looking for impactful ideas in the field
 3. **Open-minded**: Looking for novel ideas not proposed before
-
-## Venue-Aware Reviewer Personas
-
-Use these instead of the generic three-persona set when the paper route is known:
-
-1. **CV/benchmark reviewer**: protocol fairness, baselines, metrics, ablations, qualitative evidence.
-2. **Robotics systems reviewer**: task relevance, assumptions, runtime, robustness, deployment constraints, autonomy linkage.
-3. **ML/AI reviewer**: formulation, abstraction, controlled evidence, generalization, learning insight.
-4. **Journal reviewer**: completeness, reproducibility, claim-evidence alignment, clarity.
-5. **Open-minded bridge reviewer**: LLM/VLM/foundation-model and embodied-AI integration, measurable robot/ML capability, nontraditional but valid evidence.
-
-Each review should include an `Evidence Coverage` note, a `Venue Fit` note, and the full closure object.
 
 ## Reflection Prompt (up to 5 rounds)
 

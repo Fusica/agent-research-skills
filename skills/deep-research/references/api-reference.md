@@ -4,7 +4,7 @@
 
 ### Base URL
 ```
-https://export.arxiv.org/api/query
+http://export.arxiv.org/api/query
 ```
 
 ### Query Parameters
@@ -46,7 +46,7 @@ https://export.arxiv.org/api/query
 
 ### Script Usage
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py \
+python /Users/lingzhi/.claude/skills/deep-research/scripts/search_arxiv.py \
   --query "long context reasoning LLM" \
   --max-results 50 \
   --categories cs.AI cs.CL \
@@ -55,11 +55,11 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py 
   -o results.jsonl
 ```
 
-### Direct URL Usage
+### WebFetch Usage
 ```
-https://export.arxiv.org/api/query?search_query=all:transformer+AND+cat:cs.AI&max_results=10&sortBy=relevance
+WebFetch http://export.arxiv.org/api/query?search_query=all:transformer+AND+cat:cs.AI&max_results=10&sortBy=relevance
 ```
-Fetch the URL with the available browser/web tool and parse the Atom XML response to extract paper entries.
+Parse the Atom XML response to extract paper entries.
 
 ---
 
@@ -71,7 +71,7 @@ https://api.semanticscholar.org/graph/v1
 ```
 
 ### Authentication
-- API key from `$HOME/keys.md` (field `S2_API_Key`)
+- API key from `/Users/lingzhi/Code/keys.md` (field `S2_API_Key`)
 - Header: `x-api-key: <key>`
 - Without key: 100 requests/5 min. With key: 1 request/second sustained.
 
@@ -130,21 +130,23 @@ externalIds,url,publicationDate,tldr,isOpenAccess,openAccessPdf
 
 ### Script Usage
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
+python /Users/lingzhi/.claude/skills/deep-research/scripts/search_semantic_scholar.py \
   --query "long horizon reasoning LLM agent" \
   --max-results 100 \
+  --min-citations 10 \
+  --year-range 2022-2026 \
   --api-key <key> \
   -o results.jsonl
 ```
 
-### Direct URL Usage
+### WebFetch Usage
 ```
-https://api.semanticscholar.org/graph/v1/paper/search?query=long+horizon+reasoning&fields=title,authors,abstract,year,citationCount,externalIds&limit=20
+WebFetch https://api.semanticscholar.org/graph/v1/paper/search?query=long+horizon+reasoning&fields=title,authors,abstract,year,citationCount,externalIds&limit=20
 ```
 
 For a specific paper:
 ```
-https://api.semanticscholar.org/graph/v1/paper/arxiv:2401.12345?fields=title,authors,abstract,year,citationCount,references
+WebFetch https://api.semanticscholar.org/graph/v1/paper/arxiv:2401.12345?fields=title,authors,abstract,year,citationCount,references
 ```
 
 ---
@@ -152,7 +154,7 @@ https://api.semanticscholar.org/graph/v1/paper/arxiv:2401.12345?fields=title,aut
 ## ar5iv (HTML Paper Access)
 
 ### Overview
-ar5iv renders arXiv papers as HTML5 pages. Use this when you need to read a paper without downloading the PDF.
+ar5iv renders arXiv papers as HTML5 pages. Use this when you need to read a paper without downloading the PDF, especially in WebFetch-only mode.
 
 ### URL Pattern
 ```
@@ -165,11 +167,11 @@ https://ar5iv.labs.arxiv.org/html/2401.12345
 https://ar5iv.labs.arxiv.org/html/1706.03762
 ```
 
-### Browser/Web Usage
+### WebFetch Usage
 ```
-https://ar5iv.labs.arxiv.org/html/1706.03762
+WebFetch https://ar5iv.labs.arxiv.org/html/1706.03762
+Prompt: "Extract the abstract, introduction, methodology, and key results from this paper"
 ```
-Extract the abstract, introduction, methodology, and key results from the rendered page.
 
 ### Notes
 - Not all papers render perfectly (LaTeX edge cases)
@@ -192,14 +194,14 @@ https://api.openreview.net
 GET /notes?content.venue=ICLR+2024&limit=50
 ```
 
-### Direct URL Usage
+### WebFetch Usage
 ```
-https://api.openreview.net/notes?content.venue=NeurIPS+2024&content.title=reasoning&limit=20
+WebFetch https://api.openreview.net/notes?content.venue=NeurIPS+2024&content.title=reasoning&limit=20
+Prompt: "Extract paper titles, authors, and ratings"
 ```
-Fetch the URL with the available browser/web tool and extract paper titles, authors, and ratings.
 
 ### Notes
-- Useful for finding accepted papers at named venues when the query explicitly needs review metadata
+- Useful for finding accepted papers at top venues with review scores
 - Rate limiting is generous but be polite
 - Reviews and scores available for many venues
 
@@ -212,31 +214,24 @@ Fetch the URL with the available browser/web tool and extract paper titles, auth
 https://arxiv.org/pdf/{arxiv_id}
 ```
 
-### Local PDF Reading
-Use the available local PDF reader or document parser:
+### Claude Code Read Tool
+Claude Code's `Read` tool can natively read PDF files:
 ```
-/path/to/downloaded/paper.pdf
+Read /path/to/downloaded/paper.pdf
 ```
-This extracts text directly — no batch script is needed for individual papers.
+This extracts text directly — no scripts needed for individual papers.
 
----
-
-## Google Scholar
-
-Google Scholar has no stable official public API. Do not make it a default automated source in this skill. Use it only for manual/browser spot checks when the structured sources disagree or miss a citation trail:
-
-- exact-title lookup for ambiguous papers
-- author profile or citation trail inspection
-- sanity-checking whether a result is visible in Scholar
-
-For machine-readable search and JSONL/BibTeX output, prefer Semantic Scholar, arXiv, OpenAlex, CrossRef, OpenReview, and venue proceedings pages.
-
-### Batch PDF Downloading
-For multiple papers, use the download script, then extract text with the available local PDF tool or parser in the active workspace:
+### Batch PDF Processing
+For multiple papers, use the scripts:
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/download_papers.py \
+python /Users/lingzhi/.claude/skills/deep-research/scripts/download_papers.py \
   --jsonl paper_db.jsonl \
   --output-dir papers/ \
   --max-downloads 20 \
   --sort-by-citations
+
+python /Users/lingzhi/.claude/skills/deep-research/scripts/pdf_extract.py \
+  --input papers/ \
+  --output-dir texts/ \
+  --sections
 ```

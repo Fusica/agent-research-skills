@@ -14,9 +14,7 @@ Discover interpretable scientific equations from data using LLM-guided evolution
 
 ## References
 
-- LLM-SR patterns (prompts, evolution, sampling): `${CODEX_HOME:-$HOME/.codex}/skills/symbolic-equation/references/llmsr-patterns.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
-- Venue-aware writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- LLM-SR patterns (prompts, evolution, sampling): `~/.claude/skills/symbolic-equation/references/llmsr-patterns.md`
 
 ## Workflow (from LLM-SR)
 
@@ -26,8 +24,6 @@ Create a specification with:
 2. **Output variable**: Target quantity to predict
 3. **Evaluation function**: Fitness metric (typically negative MSE with parameter optimization)
 4. **Physical context**: Domain knowledge to guide equation discovery
-
-When any of the stable paper kernel, paper route, venue hypothesis, or evidence matrix already exists, use all available artifacts together to define the symbolic-equation task as support for a specific claim or evidence row. Do not use equation discovery to broaden the paper scope unless the user explicitly asks to reopen the kernel.
 
 ```python
 # Example specification
@@ -78,8 +74,7 @@ After search completes:
 1. Collect best equation from each island
 2. Rank by fitness score
 3. Simplify if possible (algebraic simplification)
-4. Validate on held-out data or task-relevant contexts before treating the equation as paper evidence
-5. Report with physical interpretation and the exact evidence-matrix claim it supports
+4. Report with physical interpretation
 
 ## Cluster Sampling
 
@@ -100,9 +95,6 @@ probabilities = softmax(cluster_scores / temperature)
 - Timeout protection for equation evaluation
 - No recursive equations allowed
 - Physical interpretability is preferred over pure fit
-- For ML/robotics/CV/RL/embodied AI/LLM-VLM work, define validation around the task context: sequence splits, scenes, robots, environments, episodes, prompt/model conditions, or dataset protocols as appropriate.
-- Treat discovered equations as explanatory or auxiliary evidence unless they directly drive the method and are validated under the target venue's expected protocol.
-- End major symbolic-equation runs with a convergence closure: stable kernel impact, evidence row supported, bounded open questions, freeze criteria, and the next narrowing step.
 
 ## Related Skills
 - Upstream: [data-analysis](../data-analysis/), [math-reasoning](../math-reasoning/)

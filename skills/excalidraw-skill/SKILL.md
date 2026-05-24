@@ -28,7 +28,10 @@ If neither works, tell the user:
 > 2. Build: `npm ci && npm run build`
 > 3. Start canvas: `HOST=0.0.0.0 PORT=3000 npm run canvas`
 > 4. Open `http://localhost:3000` in a browser
-> 5. (Recommended) Configure the Excalidraw MCP server in Codex with `EXPRESS_SERVER_URL=http://localhost:3000` and command `node /path/to/mcp_excalidraw/dist/index.js` for the best experience.
+> 5. (Recommended) Install the MCP server for the best experience:
+>    ```
+>    claude mcp add excalidraw -s user -e EXPRESS_SERVER_URL=http://localhost:3000 -- node /path/to/mcp_excalidraw/dist/index.js
+>    ```
 
 ### MCP vs REST API Quick Reference
 
@@ -275,9 +278,6 @@ Both are normalized to tuples automatically.
 ## References
 
 - `references/cheatsheet.md`: Complete MCP tool list (26 tools) + REST API endpoints + payload shapes.
-- When diagrams support a paper, read the research convergence policy and
-  Planning with Files bridge before adding scope or claims:
-  `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
 
 ## Related Skills
 - See also: [figure-generation](../figure-generation/), [algorithm-design](../algorithm-design/), [slide-generation](../slide-generation/)

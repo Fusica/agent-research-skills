@@ -13,10 +13,8 @@ Usage:
 """
 
 import argparse
-import importlib.util
 import json
 import os
-from pathlib import Path
 import sys
 import time
 import urllib.error
@@ -26,29 +24,7 @@ import urllib.request
 
 S2_API_KEY = os.environ.get("SEMANTIC_SCHOLAR_API_KEY", "")
 S2_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
-FIELDS = "title,authors,venue,year,abstract,citationCount,externalIds,url"
-
-
-def load_publication_policy():
-    """Load the shared publication passthrough policy from the deep-research skill."""
-    candidates = []
-    codex_home = os.environ.get("CODEX_HOME")
-    if codex_home:
-        candidates.append(Path(codex_home) / "skills/deep-research/scripts/filter_publications.py")
-    candidates.append(Path.home() / ".codex/skills/deep-research/scripts/filter_publications.py")
-    candidates.append(Path(__file__).resolve().parents[2] / "deep-research/scripts/filter_publications.py")
-
-    for path in candidates:
-        if path.exists():
-            spec = importlib.util.spec_from_file_location("filter_publications", path)
-            if spec and spec.loader:
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                return module.filter_records
-    raise RuntimeError("Could not locate deep-research/scripts/filter_publications.py")
-
-
-PUBLICATION_POLICY = load_publication_policy()
+FIELDS = "title,authors,venue,year,abstract,citationCount"
 
 
 def search_semantic_scholar(query: str, limit: int = 10) -> list[dict]:
@@ -79,22 +55,6 @@ def search_semantic_scholar(query: str, limit: int = 10) -> list[dict]:
             time.sleep(2)
             continue
     return []
-
-
-def normalize_for_publication_policy(paper: dict) -> dict:
-    """Add common fields expected by the shared publication policy."""
-    record = dict(paper)
-    external_ids = record.get("externalIds", {}) or {}
-    record["doi"] = record.get("doi") or external_ids.get("DOI", "")
-    record["arxiv_id"] = record.get("arxiv_id") or external_ids.get("ArXiv", "")
-    record["source"] = record.get("source") or "semantic_scholar"
-    return record
-
-
-def apply_publication_policy(papers: list[dict]) -> tuple[list[dict], dict]:
-    """Keep all candidate papers for relevance-based novelty assessment."""
-    normalized = [normalize_for_publication_policy(paper) for paper in papers]
-    return PUBLICATION_POLICY(normalized)
 
 
 def format_paper(paper: dict) -> str:
@@ -172,16 +132,10 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
         queries_used.append(query)
         print(f"Round {round_num}/{max_rounds}: Searching \"{query}\"")
 
-        raw_papers = search_semantic_scholar(query, limit=result_limit)
-        papers, policy_report = apply_publication_policy(raw_papers)
+        papers = search_semantic_scholar(query, limit=result_limit)
 
-        if not raw_papers:
-            print("  No results found.")
-            print()
-            continue
-        print(f"  Publication policy kept {policy_report['kept']} of {policy_report['total']} results.")
         if not papers:
-            print("  No results remain after publication policy processing.")
+            print("  No results found.")
             print()
             continue
 
@@ -207,18 +161,16 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
                 if t and len(t.split()) >= 3:
                     search_queries.append(t[:80])
 
-    # Preserve API retrieval order as the default relevance signal.
-    ranked = list(all_papers_seen.values())
+    # Rank by relevance (citation count as proxy)
+    ranked = sorted(all_papers_seen.values(),
+                    key=lambda p: p.get("citationCount", 0), reverse=True)
 
     result = {
         "idea": idea,
-        "assessment_status": "evidence_only",
-        "decision": "unclear",
-        "confidence": "low",
         "total_papers_found": len(all_papers_seen),
         "rounds_used": len(queries_used),
         "queries_used": queries_used,
-        "top_retrieved_similar": [
+        "most_cited_similar": [
             {
                 "title": p.get("title", ""),
                 "year": p.get("year"),
@@ -228,20 +180,6 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
             }
             for p in ranked[:10]
         ],
-        "fatal_risks": [],
-        "experiment_resolvable_risks": [],
-        "venue_positioning_risks": [],
-        "convergence_state": {
-            "current_stable_kernel": idea[:240],
-            "open_but_bounded_questions": [
-                "Decide whether any topic-relevant result has high or exact overlap with the idea"
-            ],
-            "decision_log": [
-                "Collected unrestricted novelty evidence; final novelty verdict still requires agent review"
-            ],
-            "freeze_criteria": "Freeze novelty search when the top topic-relevant overlaps are classified and no new query can change the verdict.",
-            "next_narrowing_step": "Classify overlap for the most similar topic-relevant papers and choose novel, incremental, not_novel, or unclear.",
-        },
     }
 
     print("=" * 60)
@@ -249,13 +187,13 @@ def run_novelty_check(idea: str, max_rounds: int = 5, result_limit: int = 10) ->
     print(f"Total unique papers found: {len(all_papers_seen)}")
     print(f"Rounds used: {len(queries_used)}/{max_rounds}")
     print()
-    print("Top retrieved similar papers:")
+    print("Most cited similar papers:")
     for i, p in enumerate(ranked[:5], 1):
         print(f"  {i}. [{p.get('year', '?')}] {p.get('title', '?')} "
               f"(citations: {p.get('citationCount', 0)})")
     print()
-    print("NOTE: This script is evidence-only.")
-    print("Review topic-relevant overlaps, then produce the convergence closure block.")
+    print("NOTE: Review the papers above to determine if your idea is novel.")
+    print("An idea is novel if no paper significantly overlaps with it.")
     print("=" * 60)
 
     return result

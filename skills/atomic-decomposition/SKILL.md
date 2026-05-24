@@ -14,9 +14,7 @@ Decompose research ideas into atomic concepts with math formula <-> code impleme
 
 ## References
 
-- Decomposition prompts and workflow: `${CODEX_HOME:-$HOME/.codex}/skills/atomic-decomposition/references/decomposition-prompts.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
-- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Decomposition prompts and workflow: `~/.claude/skills/atomic-decomposition/references/decomposition-prompts.md`
 
 ## Workflow (from AI-Researcher Survey Agent)
 
@@ -59,7 +57,6 @@ Analyze the research idea and decompose into atomic, self-contained concepts:
 - Verify consistency: every math formula has a code implementation
 - Verify completeness: every code module traces to a formal definition
 - Identify any gaps (formulas without code, or code without theory)
-- Map each atom to the stable kernel, paper route, venue hypothesis, and evidence matrix where available; mark unrelated atoms as out-of-scope rather than expanding the project
 
 ## Rules
 
@@ -69,8 +66,6 @@ Analyze the research idea and decompose into atomic, self-contained concepts:
 - Document breakdown reasoning before analysis
 - Every mathematical concept in the paper must have verified code
 - Every code module must trace back to a formal mathematical definition
-- Stop decomposition when remaining atoms no longer affect novelty, method correctness, evidence-matrix support, paper route, or venue hypothesis
-- End major decomposition rounds with the research convergence closure block
 
 ## Related Skills
 - Upstream: [research-planning](../research-planning/), [idea-generation](../idea-generation/)

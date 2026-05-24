@@ -198,13 +198,3 @@
 7. **Notes**: Use `threeparttable` + `tablenotes` for footnotes
 8. **Thousands separator**: Use commas (1,000 not 1000)
 9. **Negative numbers**: Use `$-$0.03` not `-0.03` for proper minus sign
-10. **Venue fit**: Choose table content from the evidence matrix; avoid adding columns that do not support a claim or reviewer risk.
-11. **Fairness notes**: Add detector, hardware, dataset split, prompt/model, or protocol notes when they affect interpretation.
-12. **Closure**: After major table work, report Current Stable Kernel, Venue/Writing Profile, Evidence Coverage, Open But Bounded Questions, Decision Log, Freeze Criteria, and Next Narrowing Step.
-
-## Venue-Oriented Table Patterns
-
-- CV/benchmark: main comparison, ablation, runtime/efficiency, qualitative-failure index.
-- Robotics/system: task success, robustness/deployment, hardware/runtime, system ablation.
-- ML/AI: controlled comparison, generalization, sensitivity, compute.
-- LLM/VLM/embodied: grounding/task success, model-interface ablation, prompt/model variant, failure taxonomy.

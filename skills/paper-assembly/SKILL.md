@@ -14,16 +14,14 @@ Orchestrate the entire paper pipeline end-to-end with state management and check
 
 ## References
 
-- Orchestration patterns and state management: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/orchestration-patterns.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
-- Planning with Files bridge: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/planning-with-files-bridge.md`
+- Orchestration patterns and state management: `~/.claude/skills/paper-assembly/references/orchestration-patterns.md`
 
 ## Scripts
 
 ### Check pipeline completeness
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/scripts/assembly_checker.py --dir paper/ --output checkpoint.json
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/scripts/assembly_checker.py --dir paper/ --verbose
+python ~/.claude/skills/paper-assembly/scripts/assembly_checker.py --dir paper/ --output checkpoint.json
+python ~/.claude/skills/paper-assembly/scripts/assembly_checker.py --dir paper/ --verbose
 ```
 
 Scans paper directory, checks 9 pipeline phases, reports missing artifacts, suggests next steps.
@@ -31,20 +29,19 @@ Scans paper directory, checks 9 pipeline phases, reports missing artifacts, sugg
 ## Workflow
 
 ### Step 1: Assess Current State
-1. Resolve and read active Planning with Files state when present
-2. Scan the paper directory for existing artifacts
-3. Identify which phases are complete vs pending
-4. Build a dependency graph of remaining work
+1. Scan the paper directory for existing artifacts
+2. Identify which phases are complete vs pending
+3. Build a dependency graph of remaining work
 
 ### Step 2: Execute Pipeline Phases
 Run phases in dependency order:
 
 | Phase | Skill | Input | Output |
 |-------|-------|-------|--------|
-| 1. Literature | literature-search, literature-review | Topic | Relevance-selected knowledge base, publication_policy_report.json, BibTeX |
-| 2. Planning | research-planning | Knowledge base | Stable kernel, paper route, venue hypothesis, paper structure, task list |
+| 1. Literature | literature-search, literature-review | Topic | Knowledge base, BibTeX |
+| 2. Planning | research-planning | Knowledge base | Paper structure, task list |
 | 3. Code | experiment-code | Plan | Training/eval pipeline |
-| 4. Experiments | experiment-design | Code | Evidence matrix, Results JSON/CSV |
+| 4. Experiments | experiment-design | Code | Results JSON/CSV |
 | 5. Figures | figure-generation | Results | PNG figures |
 | 6. Tables | table-generation | Results | LaTeX tables |
 | 7. Writing | paper-writing-section | All above | main.tex sections |
@@ -58,18 +55,12 @@ After each phase completes:
 1. Save output artifacts to the paper directory
 2. Propagate results to downstream phases
 3. Update the progress checkpoint file
-4. Update the convergence state: stable kernel, bounded questions, decision log, freeze criteria, and next narrowing step
-5. Mirror phase status, findings, and verification results into active Planning with Files files when present
 
 ### Step 4: Quality Gates
 Before proceeding to the next phase:
 - Verify all required outputs exist
-- For literature/citation phases, verify `publication_policy_report.json` exists or confirm the source is an unrestricted relevance-selected `paper_db.jsonl`
 - Check for consistency (e.g., all cited keys in .bib)
 - Validate figures/tables match experimental results
-- Verify the current paper route and venue hypothesis are explicit before experiment design
-- Verify every major claim has evidence planned before writing begins
-- Once writing lock is reached, do not widen scope unless a fatal evidence or venue-fit problem appears
 
 ### Step 5: Final Assembly
 1. Merge all sections into main.tex
@@ -108,15 +99,6 @@ Human can intervene at any phase boundary for review/correction.
     "code": "experiments/",
     "results": null
   },
-  "convergence_state": {
-    "current_stable_kernel": "...",
-    "paper_route": "CV perception method",
-    "venue_hypothesis": ["CVPR/ICCV/ECCV", "TPAMI/TIP"],
-    "open_but_bounded_questions": ["..."],
-    "decision_log": ["..."],
-    "freeze_criteria": "...",
-    "next_narrowing_step": "..."
-  },
   "last_updated": "2024-01-15T10:30:00Z"
 }
 ```
@@ -124,13 +106,10 @@ Human can intervene at any phase boundary for review/correction.
 ## Rules
 
 - Never skip phases — each depends on previous outputs
-- Keep literature and citation candidates unrestricted; narrow by topical relevance and evidence needs
 - Save checkpoints after every phase completion
 - Human review is recommended at phase boundaries
 - All numbers in the paper must trace to actual experiment logs
 - Re-run downstream phases if upstream changes
-- Keep source inclusion open and make scope narrowing evidence-driven
-- Use the closure block after planning, novelty assessment, experiment design, and major writing/revision rounds
 
 ## Related Skills
 - Upstream: all other skills (this is the orchestrator)

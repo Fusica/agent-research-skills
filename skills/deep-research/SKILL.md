@@ -17,8 +17,8 @@ Activate this skill when the user wants to:
 
 This skill conducts systematic academic literature reviews in 6 phases, producing structured notes, a curated paper database, and a synthesized final report. Output is organized **by phase** for clarity.
 
-**Installation**: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/` — scripts, references, and this skill definition.
-**Output**: `././deep-research-output/{slug}/` relative to the current working directory.
+**Installation**: `~/.claude/skills/deep-research/` — scripts, references, and this skill definition.
+**Output**: `.//Users/lingzhi/Code/deep-research-output/{slug}/` relative to the current working directory.
 
 ## CRITICAL: Strict Sequential Phase Execution
 
@@ -54,36 +54,34 @@ Before starting Phase N+1, you MUST verify that Phase N's **required output file
 - **Phase 5 (Synthesis)** requires deep knowledge from Phase 3 — you cannot synthesize papers you haven't read
 - **Phase 6 (Report)** assembles content from ALL prior phases — it should cite specific findings from Phase 3 notes
 
-## Publication Relevance Policy
+## Paper Quality Policy
 
-Keep literature discovery unrestricted. Do not exclude or prioritize papers by
-venue, publisher, journal, DOI prefix, domain, preprint status, or perceived
-source quality. Include any paper that is relevant to the user's topic.
+**Peer-reviewed conference papers take priority over arXiv preprints.** Many arXiv papers have not undergone peer review and may contain unverified claims.
 
-Use `filter_publications.py` only as a compatibility passthrough for older
-workflow steps that expect this command:
+### Source Priority (highest to lowest)
+1. **Top AI conferences**: NeurIPS, ICLR, ICML, ACL, EMNLP, NAACL, AAAI, IJCAI, CVPR, KDD, CoRL
+2. **Peer-reviewed journals**: JMLR, TACL, Nature, Science, etc.
+3. **Workshop papers**: NeurIPS/ICML workshops (lower bar but still reviewed)
+4. **arXiv preprints with high citations**: Likely high-quality but unverified
+5. **Recent arXiv preprints**: Use cautiously, note "preprint" status explicitly
 
-```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
-  --input merged_raw.jsonl \
-  --output paper_db.jsonl \
-  --report publication_policy_report.json
-```
+### When to Use arXiv Papers
+- As **supplementary** evidence alongside peer-reviewed work
+- For **very recent** results (< 3 months old) not yet at conferences
+- When a peer-reviewed version doesn't exist yet — note `(preprint)` in citations
+- For **survey/review** papers (these are useful even without peer review)
 
-See `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md` for the current keep-all relevance policy.
-When deep research is part of a paper pipeline, also load `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md` and end Phase 5/6 with the convergence closure block.
+## Search Tools (by priority)
 
-## Search Tools
-
-### 1. paper_finder (optional external tool — conference papers only)
-**Location**: Not bundled. Use only if the current machine has a working `paper_finder.py` and the user provides its path.
+### 1. paper_finder (primary — conference papers only)
+**Location**: `/Users/lingzhi/Code/documents/tool/paper_finder/paper_finder.py`
 
 Searches ai-paper-finder.info (HuggingFace Space) for published conference papers. Supports filtering by conference + year. Outputs JSONL with BibTeX.
 
 ```bash
-python /path/to/paper_finder.py --mode scrape --config <config.yaml>
-python /path/to/paper_finder.py --mode download --jsonl <results.jsonl>
-python /path/to/paper_finder.py --list-venues
+python /Users/lingzhi/Code/documents/tool/paper_finder/paper_finder.py --mode scrape --config <config.yaml>
+python /Users/lingzhi/Code/documents/tool/paper_finder/paper_finder.py --mode download --jsonl <results.jsonl>
+python /Users/lingzhi/Code/documents/tool/paper_finder/paper_finder.py --list-venues
 ```
 
 Config example:
@@ -96,51 +94,49 @@ searches:
       iclr: [2024, 2025, 2026]
       icml: [2024, 2025]
 output:
-  root: ./deep-research-output/{slug}/phase1_frontier/search_results
+  root: /Users/lingzhi/Code/deep-research-output/{slug}/phase1_frontier/search_results
   overwrite: true
 ```
 
 ### 2. search_semantic_scholar.py (supplementary — citation data + broader coverage)
-**Location**: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py`
-Use broad topic queries and keep all source types. API key: `$HOME/keys.md` (field `S2_API_Key`)
+**Location**: `/Users/lingzhi/.claude/skills/deep-research/scripts/search_semantic_scholar.py`
+Supports `--peer-reviewed-only` and `--top-conferences` filters. API key: `/Users/lingzhi/Code/keys.md` (field `S2_API_Key`)
 
 ### 3. search_arxiv.py (supplementary — latest preprints)
-**Location**: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py`
+**Location**: `/Users/lingzhi/.claude/skills/deep-research/scripts/search_arxiv.py`
 For searching recent papers not yet published at conferences. Mark citations with `(preprint)`.
 
 ### Other Scripts
 | Script | Location | Key Flags |
 |--------|----------|-----------|
-| `download_papers.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output-dir`, `--max-downloads`, `--sort-by-citations` |
-| `extract_pdf.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--pdf`, `--pdf-dir`, `--output-dir`, `--sections-only` |
-| `paper_db.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | subcommands: `merge`, `search`, `filter`, `tag`, `stats`, `add`, `export` |
-| `filter_publications.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--input`, `--output`, `--report` |
-| `bibtex_manager.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--jsonl`, `--output`, `--keys-only` |
-| `compile_report.py` | `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/` | `--topic-dir` |
+| `download_papers.py` | `~/.claude/skills/deep-research/scripts/` | `--jsonl`, `--output-dir`, `--max-downloads`, `--sort-by-citations` |
+| `extract_pdf.py` | `~/.claude/skills/deep-research/scripts/` | `--pdf`, `--pdf-dir`, `--output-dir`, `--sections-only` |
+| `paper_db.py` | `~/.claude/skills/deep-research/scripts/` | subcommands: `merge`, `search`, `filter`, `tag`, `stats`, `add`, `export` |
+| `bibtex_manager.py` | `~/.claude/skills/deep-research/scripts/` | `--jsonl`, `--output`, `--keys-only` |
+| `compile_report.py` | `~/.claude/skills/deep-research/scripts/` | `--topic-dir` |
 
-### URL/Browser Mode (no Bash)
-1. **Paper discovery**: use web search or direct API URLs for Semantic Scholar/arXiv/OpenAlex
-2. **Paper reading**: use ar5iv HTML, downloaded PDFs, or the available local PDF reader
-3. **Writing**: save JSONL, notes, and report files in the active workspace
+### WebFetch Mode (no Bash)
+1. **Paper discovery**: `WebSearch` + `WebFetch` to query Semantic Scholar/arXiv APIs
+2. **Paper reading**: `WebFetch` on ar5iv HTML or `Read` tool on downloaded PDFs
+3. **Writing**: `Write` tool for JSONL, notes, report files
 
 ## 6-Phase Workflow
 
 ### Phase 1: Frontier
-Search broadly for topic-relevant papers, preprints, surveys, and adjacent work.
-1. Write `phase1_frontier/paper_finder_config.yaml` with broad query variants
-2. Run paper_finder scrape when it is useful for the topic
-3. Search the web for relevant paper lists and project pages
-4. Identify trending directions, key breakthroughs, and direct overlaps
+Search the **latest** conference proceedings and preprints to understand current trends.
+1. Write `phase1_frontier/paper_finder_config.yaml` targeting latest 1-2 years
+2. Run paper_finder scrape
+3. WebSearch for latest accepted paper lists
+4. Identify trending directions, key breakthroughs
 → Output: `phase1_frontier/frontier.md`, `phase1_frontier/search_results/`
 
 ### Phase 2: Survey
-Build a comprehensive landscape with broader time range. Target **35-80 topic-relevant papers** after relevance selection.
-1. Write `phase2_survey/paper_finder_config.yaml` covering broad topic variants
+Build a comprehensive landscape with broader time range. Target **35-80 papers** after filtering.
+1. Write `phase2_survey/paper_finder_config.yaml` covering 2023-2025
 2. Run paper_finder + Semantic Scholar + arXiv
-3. Merge all results to `merged_raw.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge`
-4. Run the publication passthrough to create `paper_db.jsonl`: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py --input merged_raw.jsonl --output paper_db.jsonl --report publication_policy_report.json`.
-5. Filter to 35-80 most relevant if needed: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter --min-score 0.80 --max-papers 70`
-6. Cluster by theme, write survey notes
+3. Merge all results: `python /Users/lingzhi/.claude/skills/deep-research/scripts/paper_db.py merge`
+4. Filter to 35-80 most relevant: `python /Users/lingzhi/.claude/skills/deep-research/scripts/paper_db.py filter --min-score 0.80 --max-papers 70`
+5. Cluster by theme, write survey notes
 → Output: `phase2_survey/survey.md`, `phase2_survey/search_results/`, `paper_db.jsonl`
 
 ### Phase 3: Deep Dive ⚠️ DO NOT SKIP
@@ -149,7 +145,7 @@ Build a comprehensive landscape with broader time range. Target **35-80 topic-re
 
 1. Select 8-15 papers from paper_db.jsonl with rationale → write `phase3_deep_dive/selection.md`
 2. Download PDFs: `python download_papers.py --jsonl paper_db.jsonl --output-dir phase3_deep_dive/papers/ --sort-by-citations --max-downloads 15`
-3. For EACH selected paper, read the full text (PDF via the local PDF reader or HTML via ar5iv/browser fetch)
+3. For EACH selected paper, read the full text (PDF via `Read` or HTML via `WebFetch` on ar5iv)
 4. Write detailed structured notes per paper (see note-format.md template): problem, contributions, methodology, experiments, limitations, connections
 5. Write ALL notes → `phase3_deep_dive/deep_dive.md`
 
@@ -162,7 +158,7 @@ Build a comprehensive landscape with broader time range. Target **35-80 topic-re
 **This phase is MANDATORY.** You must survey the open-source ecosystem.
 
 1. Extract GitHub URLs from papers read in Phase 3
-2. Search the web for implementations: "site:github.com {method name}", "site:paperswithcode.com {topic}"
+2. WebSearch for implementations: "site:github.com {method name}", "site:paperswithcode.com {topic}"
 3. For each repo found: record URL, stars, language, last updated, documentation quality
 4. Search for related benchmarks and datasets
 5. Write → `phase4_code/code_repos.md` (must contain ≥3 repositories)
@@ -225,17 +221,16 @@ output/{topic-slug}/
 
 - **Paper IDs**: Use `arxiv_id` when available, otherwise Semantic Scholar `paperId`
 - **Citations**: `[@key]` format, key = firstAuthorYearWord (e.g., `[@vaswani2017attention]`)
-- **JSONL schema**: title, authors, abstract, year, venue, venue_normalized, peer_reviewed, citationCount, paperId, arxiv_id, pdf_url, tags, source
-- **Source marking**: Note source type when useful, but do not remove papers based on source type
+- **JSONL schema**: title, authors, abstract, year, venue, venue_normalized, **peer_reviewed**, citationCount, paperId, arxiv_id, pdf_url, tags, source
+- **Preprint marking**: Always note `(preprint)` when citing non-peer-reviewed work
 - **Incremental saves**: Each phase writes to disk immediately
 - **Paper count**: Target 35-80 papers in final paper_db.jsonl (use `paper_db.py filter`)
 
 ## References
 
-- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/workflow-phases.md` — Detailed 6-phase methodology
-- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/note-format.md` — Note templates, BibTeX format, report structure
-- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/api-reference.md` — arXiv, Semantic Scholar, ar5iv API guide
-- `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md` — unrestricted relevance-only publication policy
+- `/Users/lingzhi/.claude/skills/deep-research/references/workflow-phases.md` — Detailed 6-phase methodology
+- `/Users/lingzhi/.claude/skills/deep-research/references/note-format.md` — Note templates, BibTeX format, report structure
+- `/Users/lingzhi/.claude/skills/deep-research/references/api-reference.md` — arXiv, Semantic Scholar, ar5iv API guide
 
 ## Related Skills
 - Downstream: [literature-search](../literature-search/), [literature-review](../literature-review/), [citation-management](../citation-management/)

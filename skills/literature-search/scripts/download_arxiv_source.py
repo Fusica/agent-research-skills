@@ -20,19 +20,18 @@ import sys
 import tarfile
 import tempfile
 import time
-import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
-ARXIV_API = "https://export.arxiv.org/api/query"
+ARXIV_API = "http://export.arxiv.org/api/query"
 ARXIV_NS = {"atom": "http://www.w3.org/2005/Atom"}
 
 
 def search_arxiv(query: str, max_results: int = 5, search_field: str = "ti") -> list[dict]:
     """Search arXiv API and return paper metadata."""
     params = urllib.parse.urlencode({
-        "search_query": f"{search_field}:{query}",
+        "search_query": f"{search_field}:{urllib.parse.quote(query)}",
         "start": 0,
         "max_results": max_results,
         "sortBy": "relevance",
@@ -40,27 +39,12 @@ def search_arxiv(query: str, max_results: int = 5, search_field: str = "ti") -> 
     })
     url = f"{ARXIV_API}?{params}"
 
-    req = urllib.request.Request(url, headers={"User-Agent": "agent-research-skills/1.0"})
-    xml_data = b""
-    for attempt in range(4):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                xml_data = resp.read()
-            break
-        except urllib.error.HTTPError as e:
-            if e.code in {429, 503} and attempt < 3:
-                wait = int(e.headers.get("Retry-After") or (2 ** (attempt + 1)))
-                print(f"arXiv rate limited, waiting {wait}s...", file=sys.stderr)
-                time.sleep(wait)
-                continue
-            print(f"arXiv API error: {e}", file=sys.stderr)
-            return []
-        except Exception as e:
-            if attempt < 3:
-                time.sleep(2 ** attempt)
-                continue
-            print(f"arXiv API error: {e}", file=sys.stderr)
-            return []
+    try:
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            xml_data = resp.read()
+    except Exception as e:
+        print(f"arXiv API error: {e}", file=sys.stderr)
+        return []
 
     root = ET.fromstring(xml_data)
     papers = []
@@ -123,27 +107,13 @@ def download_source(arxiv_id: str, output_dir: str) -> str | None:
     safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", arxiv_id)
     os.makedirs(output_dir, exist_ok=True)
 
-    req = urllib.request.Request(source_url, headers={"User-Agent": "agent-research-skills/1.0"})
-    tar_data = b""
-    for attempt in range(4):
-        try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                tar_data = resp.read()
-            break
-        except urllib.error.HTTPError as e:
-            if e.code in {429, 503} and attempt < 3:
-                wait = int(e.headers.get("Retry-After") or (2 ** (attempt + 1)))
-                print(f"arXiv source rate limited, waiting {wait}s...", file=sys.stderr)
-                time.sleep(wait)
-                continue
-            print(f"Download failed for {arxiv_id}: {e}", file=sys.stderr)
-            return None
-        except Exception as e:
-            if attempt < 3:
-                time.sleep(2 ** attempt)
-                continue
-            print(f"Download failed for {arxiv_id}: {e}", file=sys.stderr)
-            return None
+    try:
+        req = urllib.request.Request(source_url, headers={"User-Agent": "SkillScript/1.0"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            tar_data = resp.read()
+    except Exception as e:
+        print(f"Download failed for {arxiv_id}: {e}", file=sys.stderr)
+        return None
 
     # Save tarball to temp file, then extract
     with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:

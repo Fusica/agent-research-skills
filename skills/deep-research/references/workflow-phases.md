@@ -2,7 +2,7 @@
 
 **CRITICAL: Execute ALL 6 phases in strict order (1→2→3→4→5→6). NEVER skip any phase. Each phase must produce its required output files before the next phase can begin.**
 
-All outputs are organized by phase under `./deep-research-output/{slug}/`.
+All outputs are organized by phase under `/Users/lingzhi/Code/deep-research-output/{slug}/`.
 
 ## Phase 1: Frontier
 
@@ -20,40 +20,25 @@ Identify the **latest breakthroughs** and trending directions. Understand what t
      - query: "{topic}"
        num_results: 50
        venues:
-         cvpr: [2025]
-         iccv: [2025]
-         icra: [2025]
-         iros: [2025]
-         corl: [2025]
-         rss: [2025]
          neurips: [2025]
          icml: [2025]
          iclr: [2025, 2026]
-         aaai: [2025]
+         acl: [2025]
    output:
-     root: ./deep-research-output/{slug}/phase1_frontier/search_results
+     root: /Users/lingzhi/Code/deep-research-output/{slug}/phase1_frontier/search_results
      overwrite: true
    ```
 
-2. **Run paper_finder if available**: `python /path/to/paper_finder.py --mode scrape --config phase1_frontier/paper_finder_config.yaml`
+2. **Run paper_finder**: `python /Users/lingzhi/Code/documents/tool/paper_finder/paper_finder.py --mode scrape --config phase1_frontier/paper_finder_config.yaml`
 
-3. **Web search for accepted papers**: "{topic} NeurIPS 2025 accepted", "{topic} ICML 2025 oral"
+3. **WebSearch for accepted papers**: "{topic} NeurIPS 2025 accepted", "{topic} ICML 2025 oral"
 
-4. **Run publication passthrough** to normalize JSONL search results before writing notes:
-   ```
-   python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
-     --input phase1_frontier/search_results/*.jsonl \
-     --output phase1_frontier/frontier_filtered.jsonl \
-     --report phase1_frontier/publication_policy_report.json
-   ```
-
-5. **Write frontier notes** → `phase1_frontier/frontier.md`
+4. **Write frontier notes** → `phase1_frontier/frontier.md`
    - Key recent papers (title, venue, 1-line summary)
    - Trending directions (3-5 themes)
    - Active research groups
-   - Publication policy counts and any metadata caveats
 
-### Checks
+### Quality Checks
 - At least 10 papers from the latest 1-2 conference cycles
 - Clear picture of what's "hot" right now
 
@@ -72,44 +57,34 @@ Build a comprehensive landscape. Discover **35-80 relevant papers** spanning rec
 
 ### Steps
 
-1. **Write config**: `phase2_survey/paper_finder_config.yaml` covering broad topic variants and adjacent terminology
+1. **Write config**: `phase2_survey/paper_finder_config.yaml` covering 2023-2025 across all major venues
 
 2. **Search across sources** (save all to `phase2_survey/search_results/`):
-   - **paper_finder (optional)**: Broad config when the topic benefits from venue-page scraping
-   - **Semantic Scholar (supplementary)**: broad topic query, save to `s2_results.jsonl`
+   - **paper_finder (primary)**: Broad config, 2023-2025
+   - **Semantic Scholar (supplementary)**: `--peer-reviewed-only`, save to `s2_results.jsonl`
    - **arXiv (preprints)**: Save to `arxiv_results.jsonl`
 
 3. **Merge and deduplicate**:
    ```
-   python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge \
+   python /Users/lingzhi/.claude/skills/deep-research/scripts/paper_db.py merge \
      --inputs phase1_frontier/search_results/*.jsonl phase2_survey/search_results/*.jsonl \
-     --output merged_raw.jsonl
+     --output paper_db.jsonl
    ```
 
-4. **Run publication passthrough**:
+4. **Filter to 35-80 papers** (critical step):
    ```
-   python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
-     --input merged_raw.jsonl \
-     --output paper_db.jsonl \
-     --report publication_policy_report.json
-   ```
-
-   This keeps all sources and removes stale source-ranking metadata. Relevance selection happens in the next step.
-
-5. **Filter to 35-80 papers** (critical step). Choose keywords from the current stable kernel, paper route, and bounded open questions; do not use fixed UAV/drone keywords for unrelated ML/robotics/CV/RL/embodied/LLM-VLM bridge work.
-   ```
-   python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py filter \
+   python /Users/lingzhi/.claude/skills/deep-research/scripts/paper_db.py filter \
      --input paper_db.jsonl -o paper_db.jsonl \
-     --min-score 0.80 --max-papers 70
+     --min-score 0.80 --max-papers 70 \
+     --keywords agent bio drug protein reason plan
    ```
 
-6. **Cluster and analyze**: Group by methodology, application domain
+5. **Cluster and analyze**: Group by methodology, application domain
 
-7. **Write survey notes** → `phase2_survey/survey.md`
+6. **Write survey notes** → `phase2_survey/survey.md`
 
-### Checks
+### Quality Checks
 - 35-80 papers in paper_db.jsonl (NOT more)
-- `publication_policy_report.json` exists and reports that all records were kept
 - At least 3 distinct themes identified
 - Mix of recent and foundational papers
 
@@ -139,9 +114,9 @@ Write selection with rationale → `phase3_deep_dive/selection.md`
 
 ### Reading Each Paper
 
-1. **Download PDFs**: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/download_papers.py --jsonl paper_db.jsonl --output-dir phase3_deep_dive/papers/ --sort-by-citations --max-downloads 15`
+1. **Download PDFs**: `python /Users/lingzhi/.claude/skills/deep-research/scripts/download_papers.py --jsonl paper_db.jsonl --output-dir phase3_deep_dive/papers/ --sort-by-citations --max-downloads 15`
 
-2. **Read**: use the local PDF reader for `phase3_deep_dive/papers/{file}.pdf` or fetch `https://ar5iv.labs.arxiv.org/html/{arxiv_id}` in a browser/web tool
+2. **Read**: `Read phase3_deep_dive/papers/{file}.pdf` or `WebFetch https://ar5iv.labs.arxiv.org/html/{arxiv_id}`
 
 3. **Extract structured notes** (per paper):
    - Problem statement
@@ -171,7 +146,7 @@ Map the open-source ecosystem: implementations, frameworks, benchmarks, datasets
 
 ### Steps
 1. Extract GitHub URLs from deep-dive papers
-2. Web search: "site:github.com {method name}", "site:paperswithcode.com {topic}"
+2. WebSearch: "site:github.com {method name}", "site:paperswithcode.com {topic}"
 3. Evaluate: Stars, recency, documentation quality
 4. Write → `phase4_code/code_repos.md` (must contain ≥3 repositories)
 
@@ -240,9 +215,9 @@ Assemble all research into a coherent, well-cited report.
 1. **Outline**: Draft section outline
 2. **Assemble**: Pull content from all phase notes
 3. **Citations**: Ensure every claim has `[@key]`
-4. **BibTeX**: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.py --jsonl paper_db.jsonl --output phase6_report/references.bib`
-5. **Compile**: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/compile_report.py --topic-dir ./deep-research-output/{slug}/`
-6. **Stats**: `python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py stats --input paper_db.jsonl`
+4. **BibTeX**: `python /Users/lingzhi/.claude/skills/deep-research/scripts/bibtex_manager.py --jsonl paper_db.jsonl --output phase6_report/references.bib`
+5. **Compile**: `python /Users/lingzhi/.claude/skills/deep-research/scripts/compile_report.py --topic-dir /Users/lingzhi/Code/deep-research-output/{slug}/`
+6. **Stats**: `python /Users/lingzhi/.claude/skills/deep-research/scripts/paper_db.py stats --input paper_db.jsonl`
 
 ### Output
 - `phase6_report/report.md` — Final report (2000-5000 words)

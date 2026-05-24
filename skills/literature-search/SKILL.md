@@ -12,68 +12,49 @@ Search multiple academic databases to find relevant papers.
 
 - `$ARGUMENTS` — The search query (natural language)
 
-## Planning Context
-
-Before broad literature search for an active paper project, read the Planning
-with Files state and convergence policy:
-`${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`.
-Use the active plan to choose search scope and write durable findings back to
-`findings.md` / `progress.md` when available.
-
 ## Scripts
 
 ### Semantic Scholar (primary — best for ML/AI, has BibTeX)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
-  --query "QUERY" --max-results 20 \
-  --api-key "$(grep S2_API_Key $HOME/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')" \
+python ~/.claude/skills/deep-research/scripts/search_semantic_scholar.py \
+  --query "QUERY" --max-results 20 --year-range 2022-2026 \
+  --api-key "$(grep S2_API_Key /Users/lingzhi/Code/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')" \
   -o results_s2.jsonl
 ```
 
-Useful optional flag: `--year-range 2020-2026` only when the user explicitly asks for a time window.
+Key flags: `--peer-reviewed-only`, `--top-conferences`, `--min-citations N`, `--venue NeurIPS ICML`
 
 ### arXiv (latest preprints)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py \
+python ~/.claude/skills/deep-research/scripts/search_arxiv.py \
   --query "QUERY" --max-results 10 -o results_arxiv.jsonl
 ```
 
 ### OpenAlex (broadest coverage, free, no API key)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_openalex.py \
-  --query "QUERY" --max-results 20 -o results_openalex.jsonl
+python ~/.claude/skills/literature-search/scripts/search_openalex.py \
+  --query "QUERY" --max-results 20 --year-range 2022-2026 \
+  --min-citations 5 -o results_openalex.jsonl
 ```
 
 ### Merge & Deduplicate
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/paper_db.py merge \
+python ~/.claude/skills/deep-research/scripts/paper_db.py merge \
   --inputs results_s2.jsonl results_arxiv.jsonl results_openalex.jsonl \
-  --output merged_raw.jsonl
+  --output merged.jsonl
 ```
-
-### Publication Policy (keep all sources)
-```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
-  --input merged_raw.jsonl \
-  --output merged.jsonl \
-  --report publication_policy_report.json
-```
-This is a compatibility passthrough. It keeps all papers from all sources and removes stale source-ranking metadata.
 
 ### CrossRef (DOI-based lookup, broadest type coverage)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_crossref.py \
+python ~/.claude/skills/literature-search/scripts/search_crossref.py \
   --query "QUERY" --rows 10 --output results_crossref.jsonl
 ```
 
 Key flags: `--bibtex` (output .bib format), `--rows N`
 
-### Google Scholar (manual/browser cross-check only)
-Google Scholar does not provide a stable official public API. Do not use it as the default scripted backend. Use it only for browser/manual spot checks: exact-title lookup, author profile inspection, citation trail sanity checks, or cases where Semantic Scholar/OpenAlex/CrossRef disagree.
-
 ### Download arXiv Source (get .tex files)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/download_arxiv_source.py \
+python ~/.claude/skills/literature-search/scripts/download_arxiv_source.py \
   --title "Paper Title" --output-dir arxiv_papers/
 ```
 
@@ -81,7 +62,7 @@ Key flags: `--arxiv-id 1706.03762`, `--metadata`, `--max-results N`
 
 ### Generate BibTeX from results
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.py \
+python ~/.claude/skills/deep-research/scripts/bibtex_manager.py \
   --jsonl merged.jsonl --output references.bib
 ```
 
@@ -91,23 +72,19 @@ python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.p
 2. Run Semantic Scholar search (primary) with expanded queries
 3. Run arXiv for very recent preprints (< 3 months)
 4. Optionally run OpenAlex for broader coverage
-5. Use Google Scholar only as a manual/browser cross-check when structured sources miss or disagree
-6. Merge and deduplicate results to `merged_raw.jsonl`
-7. Run `filter_publications.py` only if a workflow expects `merged.jsonl`; it does not exclude records
-8. Rank by topical relevance to the user's query; use citations and recency only as descriptive metadata or tie-breakers
-9. Present structured results table and mention that the publication policy kept all records
-10. If a stable kernel or venue hypothesis exists, label each result as core evidence, bridge evidence, baseline candidate, or background
+5. Merge and deduplicate results
+6. Rank by: citations (0.3) + recency (0.3) + venue quality (0.2) + relevance (0.2)
+7. Present structured results table
 
-## Relevance-Only Source Policy
+## Venue Quality Tiers
 
-Use `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`.
-
-Do not exclude, prioritize, or downgrade papers by venue, publisher, journal, DOI prefix, domain, or preprint status. Keep anything topically relevant.
+**Tier 1:** NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, CVPR, ICCV, ECCV, KDD, AAAI, IJCAI, SIGIR, WWW
+**Tier 2:** AISTATS, UAI, COLT, COLING, EACL, WACV, JMLR, TACL
+**Tier 3:** Workshops, arXiv preprints — mark with `(preprint)`
 
 ## Output Format
 
 Present results as a table + detailed entries with BibTeX keys. Always note preprint status.
-End iterative search rounds with Current Stable Kernel, Open But Bounded Questions, Decision Log, Freeze Criteria, and Next Narrowing Step when the search is part of idea/novelty/planning work.
 
 ## Related Skills
 - Downstream: [citation-management](../citation-management/), [literature-review](../literature-review/), [related-work-writing](../related-work-writing/)

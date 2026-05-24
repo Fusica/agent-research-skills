@@ -18,8 +18,6 @@ When refining any section, check for these specific errors:
 - Duplicate headers, e.g. duplicated `\section{Introduction}` or `\end{document}`
 - Unescaped symbols, e.g. `shakespeare_char` should be `shakespeare\_char` in text
 - Incorrect closing of environments, e.g. `</end{figure}>` instead of `\end{figure}`
-- Claim strength exceeding the evidence matrix or selected venue profile
-- New scope, baselines, or research angles introduced after writing lock
 
 ## Pass 1: Error Correction
 
@@ -60,7 +58,6 @@ Keep the experimental results (figures and tables) only in the Results section, 
 In this pass, do not reference anything in later sections of the paper.
 
 Before every paragraph, please include a brief description of what you plan to write in that paragraph in a comment.
-End with the venue-writing closure block: Current Stable Kernel, Venue/Writing Profile, Evidence Coverage, Open But Bounded Questions, Decision Log, Freeze Criteria, Next Narrowing Step.
 ```
 
 ## Related Work Sketch (before citation harvesting)

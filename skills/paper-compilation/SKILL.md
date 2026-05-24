@@ -12,34 +12,26 @@ Compile a LaTeX paper to PDF with error detection and correction.
 
 - `$ARGUMENTS` — Path to the main `.tex` file
 
-## Planning Context
-
-When compiling an active paper project, read
-`${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
-and the Planning with Files bridge before deciding whether compile warnings are
-blocking. Log compile commands, warnings, page counts, and fixes to the active
-planning files when available.
-
 ## Scripts
 
 ### Compile paper
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-compilation/scripts/compile_paper.py paper/main.tex
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-compilation/scripts/compile_paper.py paper/main.tex --check-style
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-compilation/scripts/compile_paper.py paper/main.tex --output paper/output.pdf
+python ~/.claude/skills/paper-compilation/scripts/compile_paper.py paper/main.tex
+python ~/.claude/skills/paper-compilation/scripts/compile_paper.py paper/main.tex --check-style
+python ~/.claude/skills/paper-compilation/scripts/compile_paper.py paper/main.tex --output paper/output.pdf
 ```
 
 Reports: compilation status, page count, warnings, citation/reference stats, style issues.
 
 ### Validate citations before compiling
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/citation-management/scripts/validate_citations.py \
+python ~/.claude/skills/citation-management/scripts/validate_citations.py \
   --tex paper/main.tex --bib paper/references.bib --check-figures --figures-dir paper/figures/
 ```
 
 ### Auto-fix LaTeX errors
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-compilation/scripts/fix_latex_errors.py \
+python ~/.claude/skills/paper-compilation/scripts/fix_latex_errors.py \
   --tex paper/main.tex --log compile.log --output paper/main_fixed.tex
 ```
 
@@ -47,7 +39,7 @@ Fixes: HTML tags in LaTeX, mismatched environments, missing figures. Key flags: 
 
 ### Compile with auto-fix retry
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/paper-compilation/scripts/compile_paper.py paper/main.tex --auto-fix
+python ~/.claude/skills/paper-compilation/scripts/compile_paper.py paper/main.tex --auto-fix
 ```
 
 Runs fix_latex_errors.py + recompile up to 3 rounds until compilation succeeds.
@@ -59,8 +51,6 @@ Run `validate_citations.py` to catch issues before compiling:
 - Every `\cite{key}` has a matching `.bib` entry
 - Every `\includegraphics{file}` exists
 - No duplicate labels or sections
-If a venue profile exists, confirm the compiled artifact is being checked against the intended template/page/anonymity expectations.
-When available, also confirm the stable kernel, paper route, venue hypothesis, and evidence matrix are still represented by the compiled artifact.
 
 ### Step 2: Compile
 Run `compile_paper.py` which executes: `pdflatex → bibtex → pdflatex → pdflatex`
@@ -77,8 +67,6 @@ Apply minimal fixes. Do not remove packages unnecessarily. Recompile after each 
 
 ### Step 4: Post-Compilation Report
 Check: page count vs venue limit, remaining warnings, chktex style issues.
-Mention any compile-time issue that could affect evidence presentation, such as missing figures/tables, broken hyperlinks for traceability, or unresolved claim-support references.
-End with a submission-readiness closure: stable kernel status, venue/template status, route and venue-hypothesis fit, evidence-matrix presentation status, bounded remaining issues, freeze criteria, and the next narrowing step.
 
 ## Troubleshooting
 

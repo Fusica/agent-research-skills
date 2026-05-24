@@ -115,7 +115,6 @@
   "experiment_design": {
     "baselines": ["Baseline1", "Baseline2"],
     "datasets": ["Dataset1", "Dataset2"],
-    "evaluation_contexts": ["Dataset1", "Robot/environment/scene/domain if applicable"],
     "evaluation_metrics": ["accuracy", "F1", "inference_time"],
     "hyperparameters": {
       "learning_rate": 0.001,
@@ -123,28 +122,7 @@
       "epochs": 100
     },
     "ablation_components": ["component_A", "component_B", "component_C"],
-    "replication": {
-      "unit": "seed | trial | episode | scene | environment | robot | prompt_run",
-      "count": 3,
-      "statistical_test": "paired_ttest | bootstrap_ci | none"
-    }
-  },
-  "paper_route": "algorithmic ML | CV perception method | robotics systems | robot learning/RL | embodied AI/foundation-model integration | multimedia/video AI",
-  "venue_hypothesis": ["CVPR/ICCV/ECCV", "T-RO/T-ASE/RA-L/ICRA/IROS"],
-  "evidence_matrix": [
-    {
-      "claim": "Main paper claim",
-      "required_experiments": ["main comparison", "ablation"],
-      "required_tables": ["tab:main_results"],
-      "required_figures": ["fig:qualitative"]
-    }
-  ],
-  "convergence_state": {
-    "current_stable_kernel": "Problem, core hypothesis, contribution type, and paper route that should not be reopened without new evidence.",
-    "open_but_bounded_questions": ["Questions that can change the next concrete decision."],
-    "decision_log": ["Decisions added, removed, or frozen this round."],
-    "freeze_criteria": "Condition for stopping exploration and moving to implementation/writing.",
-    "next_narrowing_step": "Exactly one next decision or experiment."
+    "num_seeds": 3
   },
   "risks": [
     {

@@ -13,19 +13,11 @@ Manage the full lifecycle of citations in a LaTeX paper.
 - `$0` — Action: `harvest`, `validate`, `add`, `format`
 - `$1` — Path to `.tex` or `.bib` file
 
-## Planning Context
-
-When citations support an active paper project, read
-`${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
-and the Planning with Files bridge before adding or removing citation themes.
-Log added citations, excluded low-quality sources, and validation results to the
-active planning files when available.
-
 ## Scripts
 
 ### Validate citations (check all cite keys resolve)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/citation-management/scripts/validate_citations.py \
+python ~/.claude/skills/citation-management/scripts/validate_citations.py \
   --tex paper/main.tex --bib paper/references.bib --check-figures --figures-dir paper/figures/
 ```
 
@@ -33,30 +25,20 @@ Reports: missing citations, unused bib entries, duplicate keys, duplicate sectio
 
 ### Generate BibTeX from paper database
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/bibtex_manager.py \
+python ~/.claude/skills/deep-research/scripts/bibtex_manager.py \
   --jsonl paper_db.jsonl --output references.bib
 ```
 
 ### Search for a specific paper to add
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
+python ~/.claude/skills/deep-research/scripts/search_semantic_scholar.py \
   --query "attention is all you need" --max-results 5 \
-  --api-key "$(grep S2_API_Key $HOME/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')"
+  --api-key "$(grep S2_API_Key /Users/lingzhi/Code/keys.md 2>/dev/null | cut -d: -f2 | tr -d ' ')"
 ```
-
-Before adding any candidate from search output, optionally run the publication passthrough to normalize JSONL:
-
-```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
-  --input candidates_raw.jsonl \
-  --output candidates_filtered.jsonl \
-  --report publication_policy_report.json
-```
-This keeps all candidates. Select citations by relevance to the claim, not by venue or publisher.
 
 ### Harvest missing citations automatically
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/citation-management/scripts/harvest_citations.py \
+python ~/.claude/skills/citation-management/scripts/harvest_citations.py \
   --tex paper/main.tex --bib paper/references.bib --output candidates.bib --max-rounds 10
 ```
 
@@ -65,7 +47,7 @@ Key flags: `--dry-run` (preview only), `--verbose`, `--api-key`
 
 ### Auto-fix missing citation placeholders
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/citation-management/scripts/validate_citations.py \
+python ~/.claude/skills/citation-management/scripts/validate_citations.py \
   --tex paper/main.tex --bib paper/references.bib --fix
 ```
 
@@ -78,20 +60,17 @@ Based on AI-Scientist's 20-round citation harvesting loop. For each round:
 1. Read the current `.tex` draft
 2. Identify the most important missing citation
 3. Search Semantic Scholar via script
-4. Keep all candidate papers available
-5. Select the most relevant paper from the results
-6. Extract BibTeX and generate a clean key (`lastNameYearWord`)
-7. Append to `.bib` (skip if key exists)
-8. Insert `\cite{key}` at the appropriate location
-9. Stop when no more gaps or 20 rounds reached
+4. Select the most relevant paper from results
+5. Extract BibTeX and generate a clean key (`lastNameYearWord`)
+6. Append to `.bib` (skip if key exists)
+7. Insert `\cite{key}` at the appropriate location
+8. Stop when no more gaps or 20 rounds reached
 
 **Key rules:**
 - DO NOT add a citation that already exists
 - Only add citations found via API — never fabricate
 - Cite broadly — not just popular papers
 - Do not copy verbatim from prior literature
-- Tag each added citation by purpose when possible: core related work, bridge method, baseline, dataset/protocol, background, or reviewer-requested
-- Do not add citations that widen the paper after writing lock unless they resolve a bounded open question or reviewer risk
 
 ## Action: `validate` — Pre-Compilation Check
 
@@ -100,7 +79,6 @@ Run `validate_citations.py` to catch all issues before compilation. Fix any repo
 ## Action: `add` — Add Specific Paper
 
 Search Semantic Scholar for the paper, extract BibTeX, clean the key, append to `.bib`.
-If search returns multiple candidates, choose by title/abstract/claim relevance rather than source type.
 
 BibTeX key format: `firstAuthorLastNameYearFirstContentWord` (e.g., `vaswani2017attention`)
 

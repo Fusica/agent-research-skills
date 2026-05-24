@@ -40,17 +40,8 @@ After reviewing results:
 - Overlap with our idea: [description]
 - Key difference: [description]
 
-Decision: [CONTINUE_SEARCHING / NOVEL / INCREMENTAL / NOT_NOVEL / UNCLEAR]
+Decision: [CONTINUE_SEARCHING / NOVEL / NOT_NOVEL]
 Reasoning: [explanation]
-convergence_state:
-- current_stable_kernel: [stable idea core]
-- open_but_bounded_questions: [questions that can change the next decision]
-- decision_log: [what this round added, removed, or froze]
-- freeze_criteria: [when to stop searching]
-- next_narrowing_step: [one next query, overlap classification, or final decision step]
-
-Stop searching early when the remaining uncertainty is bounded and another
-query is unlikely to change the decision.
 ```
 
 ## Search Query Generation Strategies
@@ -107,7 +98,7 @@ Consider:
 3. Is the novelty in the method, application, or both?
 4. Could a reviewer reasonably reject this as "incremental"?
 
-Decision: NOVEL / INCREMENTAL / NOT_NOVEL / UNCLEAR
+Decision: NOVEL / NOT_NOVEL
 Confidence: HIGH / MEDIUM / LOW
 Justification: [detailed reasoning]
 
@@ -115,13 +106,6 @@ If NOVEL, position the idea:
 - Most similar papers (for Related Work section)
 - How this idea specifically differs from each
 - The gap this idea fills in the literature
-
-Always include convergence_state:
-- current_stable_kernel
-- open_but_bounded_questions
-- decision_log
-- freeze_criteria
-- next_narrowing_step
 ```
 
 ## Novelty vs. Contribution Distinction
@@ -137,7 +121,4 @@ Note: Novelty alone is not sufficient. Also assess:
 A paper needs at least one strong contribution type.
 A "novel" combination of existing techniques may still be
 insufficient if the combination is obvious.
-
-Do not keep adding minor objections after the verdict is stable. New concerns
-must be fatal to novelty, feasibility, venue fit, or evidence sufficiency.
 ```

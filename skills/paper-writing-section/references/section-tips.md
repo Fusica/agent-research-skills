@@ -53,11 +53,3 @@
 ## Discussion / Conclusion
 - Brief recap of the entire paper.
 - To keep going with the analogy, you can think of future work as (potential) academic offspring.
-
-## Venue-Aware Addendum
-- Before writing any section, identify the stable kernel, paper route, venue hypothesis, and evidence matrix.
-- For CV venues, keep claims tied to benchmark protocol, visual evidence, ablations, and qualitative failure cases.
-- For robotics venues, keep claims tied to task assumptions, system validity, robustness, runtime, deployment constraints, and autonomy relevance.
-- For ML/AI venues, keep claims tied to formulation, generalization, controlled evidence, and learning insight.
-- For LLM/VLM or embodied-AI bridge work, state the concrete robotics/ML capability being improved and the measurable behavior that supports it.
-- Do not add new angles after writing lock. If a new issue appears, put it in the closure block as an open but bounded question.

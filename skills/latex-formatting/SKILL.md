@@ -17,20 +17,20 @@ Set up and manage LaTeX formatting for academic papers.
 
 ### Pre-submission format checker
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/latex-formatting/scripts/latex_checker.py paper/main.tex --venue neurips --check-anon
+python ~/.claude/skills/latex-formatting/scripts/latex_checker.py paper/main.tex --venue neurips --check-anon
 ```
 
 Checks: word count, required sections, TODO markers, anonymization, mismatched environments, content stats.
 
 ### Validate citations and references
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/citation-management/scripts/validate_citations.py \
+python ~/.claude/skills/citation-management/scripts/validate_citations.py \
   --tex paper/main.tex --bib paper/references.bib --check-figures
 ```
 
 ### Clean LaTeX text (fix special characters)
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/latex-formatting/scripts/clean_latex.py \
+python ~/.claude/skills/latex-formatting/scripts/clean_latex.py \
   --input paper/main.tex --output paper/main_cleaned.tex
 ```
 
@@ -39,16 +39,14 @@ Key flags: `--dry-run`, `--tables-only`
 
 ### Auto-fix after checking
 ```bash
-python ${CODEX_HOME:-$HOME/.codex}/skills/latex-formatting/scripts/latex_checker.py paper/main.tex --venue neurips --fix
+python ~/.claude/skills/latex-formatting/scripts/latex_checker.py paper/main.tex --venue neurips --fix
 ```
 
 Runs checks then applies clean_latex.py fixes, writing to `main_fixed.tex`.
 
 ## References
 
-- Venue specs, project structure, packages, commands: `${CODEX_HOME:-$HOME/.codex}/skills/latex-formatting/references/venue-templates.md`
-- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Venue specs, project structure, packages, commands: `~/.claude/skills/latex-formatting/references/venue-templates.md`
 
 ## Action: `setup`
 Create the project directory structure and main.tex for the specified venue. Use the template from `references/venue-templates.md`.
@@ -58,8 +56,6 @@ Fix common LaTeX issues: unescaped special chars, math mode errors, float placem
 
 ## Action: `check`
 Run `latex_checker.py` for pre-submission validation. Check page count, anonymization, required sections, TODO markers.
-Also check that the stable kernel / paper route / venue hypothesis / selected venue profile / evidence matrix matches the template, page limits, anonymity rules, figure/table placement, and required sections. Warn when the template implies a submission type that the current evidence does not support.
-End major formatting or pre-submission passes with a closure: stable kernel and evidence matrix still represented, venue/template fit, unresolved formatting risks, freeze criteria, and next verification step.
 
 ## Related Skills
 - Upstream: [paper-writing-section](../paper-writing-section/), [table-generation](../table-generation/)

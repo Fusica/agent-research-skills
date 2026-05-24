@@ -74,26 +74,6 @@ please correct the errors.
 Then give the complete code and don't omit anything even though you have given it in the above code.
 ```
 
-## Venue-Aware Figure Addendum
-
-When generating paper figures, first identify the stable kernel, paper route,
-venue hypothesis, and evidence matrix. A figure should do at least one of:
-
-- explain the method or system loop;
-- support a claim with quantitative evidence;
-- show qualitative behavior under protocol-relevant conditions;
-- bound the claim with failure cases;
-- address a reviewer or venue risk.
-
-For CV papers, prioritize method diagrams, benchmark plots, qualitative
-overlays, ablations, and failure cases. For robotics papers, prioritize system
-flow, deployment/task setup, robustness, runtime, and failure modes. For
-ML/AI papers, prioritize controlled trends, sensitivity, generalization, and
-compute tradeoffs. For LLM/VLM/embodied work, show grounding, model interface,
-perception/action loop, or task outcome.
-
-End major figure-generation rounds with the venue-writing closure block.
-
 ## GPT-4V Evaluation Prompt (for quality scoring)
 ```
 You are an excellent judge at evaluating visualization plots between a model generated plot and the ground truth. You will be giving scores on how well it matches the ground truth plot.

@@ -15,28 +15,20 @@ Conduct deep literature reviews through multi-perspective dialogue and systemati
 
 ## References
 
-- Multi-perspective dialogue prompts (STORM): `${CODEX_HOME:-$HOME/.codex}/skills/literature-review/references/dialogue-prompts.md`
-- Literature review workflow (AgentLaboratory): `${CODEX_HOME:-$HOME/.codex}/skills/literature-review/references/review-workflow.md`
-- Publication relevance policy: `${CODEX_HOME:-$HOME/.codex}/skills/deep-research/references/publication-relevance-policy.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Multi-perspective dialogue prompts (STORM): `~/.claude/skills/literature-review/references/dialogue-prompts.md`
+- Literature review workflow (AgentLaboratory): `~/.claude/skills/literature-review/references/review-workflow.md`
 
 ## Scripts (from literature-search skill)
 
 ```bash
 # Search Semantic Scholar
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py --query "topic" --max-results 20
+python ~/.claude/skills/deep-research/scripts/search_semantic_scholar.py --query "topic" --max-results 20
 
 # Search OpenAlex
-python ${CODEX_HOME:-$HOME/.codex}/skills/literature-search/scripts/search_openalex.py --query "topic" --max-results 20
+python ~/.claude/skills/literature-search/scripts/search_openalex.py --query "topic" --max-results 20
 
 # Search arXiv
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py --query "topic" --max-results 10
-
-# Keep all merged records before synthesis
-python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/filter_publications.py \
-  --input merged_raw.jsonl \
-  --output merged.jsonl \
-  --report publication_policy_report.json
+python ~/.claude/skills/deep-research/scripts/search_arxiv.py --query "topic" --max-results 10
 ```
 
 ## Workflow
@@ -52,24 +44,21 @@ For each persona, simulate a multi-turn Q&A conversation:
 1. **Persona asks a question** from their unique angle
 2. **Generate search queries** from the question
 3. **Search literature** using the search scripts
-4. **Merge results** and keep all topic-relevant papers available
-5. **Synthesize an answer** grounded in retrieved papers with inline citations
-6. **Record the dialogue turn** with search results and publication-policy counts
-7. Repeat for 3-5 turns per persona
-8. End when persona says "Thank you so much for your help!"
+4. **Synthesize an answer** grounded in retrieved papers with inline citations
+5. **Record the dialogue turn** with search results
+6. Repeat for 3-5 turns per persona
+7. End when persona says "Thank you so much for your help!"
 
 ### Step 3: Synthesize Knowledge
 - Combine all persona conversations into a unified knowledge base
 - Remove redundancy across personas
 - Organize by theme/subtopic
 - Generate an outline based on the collected information
-- Preserve bridge themes such as LLM/VLM, embodied AI, CV, RL, and robotics when they explain the stable kernel
 
 ### Step 4: Generate Literature Review
 - Write a structured review organized by the generated outline
 - Every claim must be supported by a citation
 - Include a summary table of key papers (method, contribution, limitations)
-- End iterative review rounds with the convergence closure block if the review feeds idea generation, novelty assessment, or paper planning
 
 ## Output
 
@@ -82,12 +71,10 @@ A structured literature review with:
 ## Rules
 
 - Every sentence in the review must be supported by gathered information
-- Use all topically relevant papers found by the search process; do not exclude by venue, publisher, journal, DOI prefix, domain, or preprint status
 - If information is not found, explicitly state the gap
 - Cite broadly — cover diverse approaches, not just the most popular
 - Include recent papers (last 2-3 years) alongside foundational work
 - Use inline citations: "Smith et al. [1] propose..."
-- Rank and group by topic relevance, method similarity, task/dataset match, and usefulness for the review question
 
 ## Related Skills
 - Upstream: [literature-search](../literature-search/), [deep-research](../deep-research/)

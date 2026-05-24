@@ -89,8 +89,3 @@ exploits the inherent structure of the input data.
 - [ ] Foundational/seminal papers are included where relevant
 - [ ] No self-citations that violate anonymization
 - [ ] The section positions our work clearly at the end
-- [ ] Related-work themes match the stable kernel, paper route, and venue hypothesis
-- [ ] LLM/VLM, embodied AI, CV, RL, and robotics bridge papers are kept when they explain the measurable contribution, not filtered by narrow scope
-- [ ] No topically relevant paper was excluded because of venue, publisher, journal, DOI prefix, domain, or preprint status
-- [ ] The final paragraph states the stable positioning and any remaining bounded related-work gap
-- [ ] The section ends with the full closure block: Current Stable Kernel, Venue/Writing Profile, Evidence Coverage, Open But Bounded Questions, Decision Log, Freeze Criteria, Next Narrowing Step

@@ -13,13 +13,12 @@ import argparse
 import json
 import sys
 import time
-import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-ARXIV_API = "https://export.arxiv.org/api/query"
+ARXIV_API = "http://export.arxiv.org/api/query"
 NS = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
 SORT_MAP = {
@@ -56,24 +55,9 @@ def fetch_results(
         "sortOrder": sort_order,
     }
     url = f"{ARXIV_API}?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(url, headers={"User-Agent": "agent-research-skills/1.0"})
-    for attempt in range(4):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                return resp.read()
-        except urllib.error.HTTPError as e:
-            if e.code in {429, 503} and attempt < 3:
-                wait = int(e.headers.get("Retry-After") or (2 ** (attempt + 1)))
-                print(f"arXiv rate limited, waiting {wait}s...", file=sys.stderr)
-                time.sleep(wait)
-                continue
-            raise
-        except Exception:
-            if attempt < 3:
-                time.sleep(2 ** attempt)
-                continue
-            raise
-    return b""
+    req = urllib.request.Request(url, headers={"User-Agent": "deep-research/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return resp.read()
 
 
 def parse_entry(entry: ET.Element) -> dict:

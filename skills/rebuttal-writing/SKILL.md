@@ -15,9 +15,7 @@ Generate structured, evidence-based rebuttals to peer review comments.
 
 ## References
 
-- Rebuttal prompts and format templates: `${CODEX_HOME:-$HOME/.codex}/skills/rebuttal-writing/references/rebuttal-prompts.md`
-- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
+- Rebuttal prompts and format templates: `~/.claude/skills/rebuttal-writing/references/rebuttal-prompts.md`
 
 ## Workflow
 
@@ -26,8 +24,6 @@ For each reviewer:
 1. Extract individual concerns/questions/weaknesses
 2. Categorize each: major concern, minor concern, question, suggestion
 3. Identify the core issue behind each concern
-4. Mark status: solved, partially solved, or still open
-5. Map to evidence: section, table, figure, equation, experiment, or bounded limitation
 
 ### Step 2: Generate Responses
 For each concern:
@@ -35,7 +31,6 @@ For each concern:
 2. **Respond with evidence** — cite specific sections, equations, experiments, or results from the paper
 3. **Describe what was done** (not what will be done) — "We have added...", "Our experiments show..."
 4. If additional experiments are needed, describe the new results concretely
-5. If a concern is only partially solved, state the supported boundary without overpromising
 
 ### Step 3: Format Rebuttal
 Use the standard rebuttal format:
@@ -62,7 +57,6 @@ Add a brief summary at the top listing all major changes made to the paper:
 - New experiments added
 - Sections revised
 - Clarifications made
-- Remaining bounded limitations, if any
 
 ## Rules
 
@@ -73,9 +67,6 @@ Add a brief summary at the top listing all major changes made to the paper:
 - **Provide evidence** — Every response should include concrete data, citations, or reasoning
 - **Keep responses concise** — Detailed enough to address the concern, but not padded
 - **Highlight changes** — When referring to modified text, use blue text or clearly mark revisions
-- **Stay venue-aware** — Frame responses around the selected paper route and evidence matrix
-- **Do not invent future work as a fix** — If evidence is missing, mark the item as still open or bounded rather than pretending it is solved
-- End with the closure block from the venue writing policy
 
 ## Related Skills
 - Upstream: [self-review](../self-review/), [paper-revision](../paper-revision/)

@@ -23,7 +23,7 @@ Here are the ideas that you have already generated:
 '''
 
 Come up with the next impactful and creative idea for research experiments and directions you can feasibly investigate with the code provided.
-If extra data, hardware, paid APIs, or large compute would be needed, state that as a resource risk instead of silently rejecting the idea.
+Note that you will not have access to any additional resources or datasets.
 Make sure any idea is not overfit the specific training dataset or model, and has wider significance.
 
 Respond in the following format:
@@ -45,11 +45,6 @@ In <JSON>, provide the new idea in JSON format with the following fields:
 - "Interestingness": A rating from 1 to 10 (lowest to highest).
 - "Feasibility": A rating from 1 to 10 (lowest to highest).
 - "Novelty": A rating from 1 to 10 (lowest to highest).
-- "paper_type": The likely paper route.
-- "venue_hypothesis": Candidate venue clusters.
-- "minimum_evidence": Experiments needed to make the paper viable.
-- "resource_risks": Data, compute, hardware, API, or implementation risks.
-- "convergence_state": current_stable_kernel, open_but_bounded_questions, decision_log, freeze_criteria, next_narrowing_step.
 
 Be cautious and realistic on your ratings.
 This JSON will be automatically parsed, so ensure the format is precise.
@@ -128,10 +123,8 @@ RESPONSE:
 In <THOUGHT>, first briefly reason over the idea and identify any query that could help you make your decision.
 If you have made your decision, add "Decision made: novel." or "Decision made: not novel." to your thoughts.
 
-In <JSON>, respond in JSON format with the following fields:
-- "Query": An optional search query to search the literature (e.g. attention is all you need). Make a query if you have not decided this round and no freeze/stop condition has been reached.
-- "decision": "continue_searching", "novel", "incremental", "not_novel", or "unclear".
-- "convergence_state": current_stable_kernel, open_but_bounded_questions, decision_log, freeze_criteria, next_narrowing_step.
+In <JSON>, respond in JSON format with ONLY the following field:
+- "Query": An optional search query to search the literature (e.g. attention is all you need). You must make a query if you have not decided this round.
 
 A query will work best if you are able to recall the exact name of the paper you are looking for, or the authors.
 This JSON will be automatically parsed, so ensure the format is precise.
@@ -143,7 +136,7 @@ This JSON will be automatically parsed, so ensure the format is precise.
 ```
 You are an experienced AI researcher who aims to propose high-impact research ideas resembling exciting grant proposals. Feel free to propose any novel ideas or experiments; make sure they are novel. Be very creative and think out of the box. Each proposal should stem from a simple and elegant question, observation, or hypothesis about the topic.
 
-Ensure that the proposal does not require resources beyond what an academic lab could afford. These proposals should lead to papers that are publishable at top ML/robotics/CV/AI venues or strong field-specific journals/conferences.
+Ensure that the proposal does not require resources beyond what an academic lab could afford. These proposals should lead to papers that are publishable at top ML conferences.
 ```
 
 **Idea Finalization (v2 fields):**
@@ -155,18 +148,7 @@ Ensure that the proposal does not require resources beyond what an academic lab 
   "Related Work": "Brief discussion of most relevant related work and how the proposal clearly distinguishes from it.",
   "Abstract": "Conference-format abstract (~250 words).",
   "Experiments": "List of experiments to validate the proposal. Be specific in how you would test the hypothesis and detail precise algorithmic changes. Include evaluation metrics.",
-  "Risk Factors and Limitations": "Potential risks and limitations of the proposal.",
-  "paper_type": "Likely paper route.",
-  "venue_hypothesis": ["Candidate venue clusters."],
-  "minimum_evidence": ["Experiments needed to make the paper viable."],
-  "resource_risks": ["Data, compute, hardware, API, or implementation risks."],
-  "convergence_state": {
-    "current_stable_kernel": "...",
-    "open_but_bounded_questions": ["..."],
-    "decision_log": ["..."],
-    "freeze_criteria": "...",
-    "next_narrowing_step": "..."
-  }
+  "Risk Factors and Limitations": "Potential risks and limitations of the proposal."
 }
 ```
 
@@ -188,8 +170,6 @@ c) Motivation: Why the problem is important, gaps to address
 d) Proposed Method: Detailed technical solution, mathematical formulations, key innovations
 e) Technical Details: Architecture design, algorithm specs, data flow
 f) Expected Outcomes: Anticipated improvements, evaluation metrics, applications
-g) convergence_state: current_stable_kernel, open_but_bounded_questions,
-   decision_log, freeze_criteria, next_narrowing_step
 ```
 
 ## Key Parameters
@@ -208,26 +188,3 @@ g) convergence_state: current_stable_kernel, open_but_bounded_questions,
 | Interestingness | 1-10 | Appeal and potential impact |
 | Feasibility | 1-10 | Implementation practicality with available resources |
 | Novelty | 1-10 | Originality vs existing literature |
-
-## Convergence Addendum
-
-When adapting these prompts for iterative research planning:
-
-- Treat "no additional resources or datasets" as a sandbox constraint only when
-  the user explicitly gives that constraint. Otherwise, label new data,
-  hardware, paid API, or large compute needs as resource risks instead of
-  automatically rejecting the idea.
-- Keep exploration broad within ML/robotics, including CV, RL, robot learning,
-  embodied AI, and LLM/VLM/foundation-model bridge ideas when they support a
-  measurable research claim.
-- Each reflected idea JSON should add:
-  - `paper_type`
-  - `venue_hypothesis`
-  - `minimum_evidence`
-  - `resource_risks`
-  - `convergence_state`
-- The `convergence_state` object must contain:
-  `current_stable_kernel`, `open_but_bounded_questions`, `decision_log`,
-  `freeze_criteria`, and `next_narrowing_step`.
-- Stop refining when the stable kernel, paper type, venue hypothesis, and
-  minimum evidence plan are strong enough for research planning.

@@ -14,9 +14,7 @@ Convert a research paper into a complete, runnable code repository.
 
 ## References
 
-- Paper2Code prompts (planning, analysis, coding stages): `${CODEX_HOME:-$HOME/.codex}/skills/paper-to-code/references/paper-to-code-prompts.md`
-- Research convergence policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-assembly/references/research-convergence-policy.md`
-- Venue writing policy: `${CODEX_HOME:-$HOME/.codex}/skills/paper-writing-section/references/venue-writing-policy.md`
+- Paper2Code prompts (planning, analysis, coding stages): `~/.claude/skills/paper-to-code/references/paper-to-code-prompts.md`
 
 ## Workflow (from Paper2Code)
 
@@ -27,7 +25,6 @@ Four-turn conversation to create a comprehensive plan:
 2. **Architecture Design**: Generate file list, Mermaid classDiagram, sequenceDiagram
 3. **Task Breakdown**: Logic analysis per file, dependency-ordered task list, required packages
 4. **Configuration**: Extract training details into `config.yaml`
-5. **Evidence mapping**: Identify which reproduced modules/results can support baselines, ablations, or protocol comparisons in the user's evidence matrix
 
 ### Stage 2: Analysis
 For each file in the task list (dependency order):
@@ -79,8 +76,6 @@ reproduced_code/
 - Every class/method in UML diagram must exist in code
 - Generate a reproduce.sh script for one-command execution
 - If paper details are ambiguous, note them explicitly
-- Preserve the original paper's protocol and assumptions; do not silently improve the method unless the task is adaptation rather than reproduction
-- When reproducing a baseline for the user's paper, map each output metric to the target evidence matrix and record fairness constraints
 
 ## Related Skills
 - Upstream: [literature-search](../literature-search/)

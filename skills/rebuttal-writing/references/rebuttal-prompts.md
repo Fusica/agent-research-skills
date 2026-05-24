@@ -100,25 +100,9 @@ We thank Reviewer #1 for [brief positive acknowledgment].
 ## Reviewer #3
 
 [Same structure as Reviewer #1]
-
----
-
-## Closure
-Current Stable Kernel:
-Venue/Writing Profile:
-Evidence Coverage:
-Open But Bounded Questions:
-Decision Log:
-Freeze Criteria:
-Next Narrowing Step:
 ```
 
 ## Response Strategies by Concern Type
-
-Before drafting responses, assign each concern a status:
-`solved`, `partially solved`, or `still open`. Map it to the evidence matrix:
-section, table, figure, equation, experiment, or bounded limitation. Do not
-claim a concern is solved without manuscript evidence.
 
 ### Missing Baselines / Comparisons
 ```
@@ -175,5 +159,3 @@ in that [key difference]. Compared to [Paper Y], our approach [advantage].
 4. **Acknowledge valid points**: "We agree with the reviewer that..."
 5. **Be concise but thorough**: Each response should be self-contained
 6. **Highlight changes**: Use blue text or clearly mark what changed in the revision
-7. **Stay within evidence**: Narrow unsupported claims instead of overpromising.
-8. **Close the loop**: End with Current Stable Kernel, Venue/Writing Profile, Evidence Coverage, Open But Bounded Questions, Decision Log, Freeze Criteria, and Next Narrowing Step.
