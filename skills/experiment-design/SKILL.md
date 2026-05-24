@@ -14,14 +14,14 @@ Design structured, progressive experiment plans for research papers.
 
 ## References
 
-- 4-stage progressive experiment prompts: `~/.claude/skills/experiment-design/references/stage-prompts.md`
+- 4-stage progressive experiment prompts: `${CODEX_HOME:-$HOME/.codex}/skills/experiment-design/references/stage-prompts.md`
 
 ## Scripts
 
 ### Generate experiment design
 ```bash
-python ~/.claude/skills/experiment-design/scripts/design_experiments.py --plan research_plan.json --output experiment_design.json
-python ~/.claude/skills/experiment-design/scripts/design_experiments.py --method "contrastive learning" --task classification --format markdown
+python ${CODEX_HOME:-$HOME/.codex}/skills/experiment-design/scripts/design_experiments.py --plan research_plan.json --output experiment_design.json
+python ${CODEX_HOME:-$HOME/.codex}/skills/experiment-design/scripts/design_experiments.py --method "contrastive learning" --task classification --format markdown
 ```
 
 Generates baselines, ablation matrix, hyperparameter grid, metric selection. Stdlib-only.

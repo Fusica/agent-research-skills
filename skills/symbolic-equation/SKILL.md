@@ -14,7 +14,7 @@ Discover interpretable scientific equations from data using LLM-guided evolution
 
 ## References
 
-- LLM-SR patterns (prompts, evolution, sampling): `~/.claude/skills/symbolic-equation/references/llmsr-patterns.md`
+- LLM-SR patterns (prompts, evolution, sampling): `${CODEX_HOME:-$HOME/.codex}/skills/symbolic-equation/references/llmsr-patterns.md`
 
 ## Workflow (from LLM-SR)
 

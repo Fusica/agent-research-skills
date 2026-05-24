@@ -50,32 +50,6 @@ def normalize_for_compare(path_value: str) -> str:
         return os.path.abspath(expanded)
 
 
-def normalize_path(project_path: str) -> str:
-    """Normalize project path to match Claude Code's internal representation.
-
-    Claude Code stores session directories using the Windows-native path
-    (e.g., C:\\Users\\...) sanitized with separators replaced by dashes.
-    Git Bash passes /c/Users/... which produces a DIFFERENT sanitized
-    string. This function converts Git Bash paths to Windows paths first.
-    """
-    p = project_path
-
-    # Git Bash / MSYS2: /c/Users/... -> C:/Users/...
-    if len(p) >= 3 and p[0] == '/' and p[2] == '/':
-        p = p[1].upper() + ':' + p[2:]
-
-    # Resolve to absolute path to handle relative paths and symlinks
-    try:
-        resolved = str(Path(p).resolve())
-        # On Windows, resolve() returns C:\Users\... which is what we want
-        if os.name == 'nt' or '\\' in resolved:
-            p = resolved
-    except (OSError, ValueError):
-        pass
-
-    return p
-
-
 def resolve_active_plan_dir(project_path: str) -> Optional[Path]:
     """Resolve project-local .planning/<plan_id>/ dirs used by these hooks."""
     root = Path(project_path)
@@ -134,27 +108,6 @@ def existing_planning_files(project_path: str) -> List[Path]:
                 files.append(path)
                 seen.add(path)
     return files
-
-
-def get_claude_project_dir(project_path: str) -> Path:
-    """Resolve Claude Code's project-specific session storage path."""
-    normalized = normalize_path(project_path)
-
-    # Claude Code's sanitization: replace path separators and : with -
-    sanitized = normalized.replace('\\', '-').replace('/', '-').replace(':', '-')
-    sanitized = sanitized.replace('_', '-')
-    # Strip leading dash if present (Unix absolute paths start with /)
-    if sanitized.startswith('-'):
-        sanitized = sanitized[1:]
-
-    return Path.home() / '.claude' / 'projects' / sanitized
-
-
-def get_sessions_sorted(project_dir: Path) -> List[Path]:
-    """Get all session files sorted by modification time (newest first)."""
-    sessions = list(project_dir.glob('*.jsonl'))
-    main_sessions = [s for s in sessions if not s.name.startswith('agent-')]
-    return sorted(main_sessions, key=safe_stat_mtime, reverse=True)
 
 
 def safe_stat_mtime(path: Path) -> float:
@@ -235,13 +188,7 @@ def get_codex_sessions(project_path: str) -> Iterable[Path]:
 
 
 def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
-    if '/.codex/' in Path(__file__).resolve().as_posix().lower():
-        return 'codex', get_codex_sessions(project_path)
-
-    claude_project_dir = get_claude_project_dir(project_path)
-    if claude_project_dir.exists():
-        return 'claude', get_sessions_sorted(claude_project_dir)
-    return 'claude', []
+    return 'codex', get_codex_sessions(project_path)
 
 
 def parse_session_messages(session_file: Path) -> List[Dict[str, Any]]:
@@ -295,23 +242,7 @@ def find_last_planning_update(messages: List[Dict[str, Any]]) -> Tuple[int, Opti
             continue
         msg_type = msg.get('type')
 
-        if msg_type == 'assistant':
-            content = msg.get('message', {}).get('content', [])
-            if isinstance(content, list):
-                for item in content:
-                    if item.get('type') == 'tool_use':
-                        tool_name = item.get('name', '')
-                        tool_input = item.get('input', {})
-                        if not isinstance(tool_input, dict):
-                            tool_input = {}
-
-                        if tool_name in ('Write', 'Edit'):
-                            planning_file = planning_file_from_path(tool_input.get('file_path', ''))
-                            if planning_file:
-                                last_update_line = line_num
-                                last_update_file = planning_file
-
-        elif msg_type == 'event_msg':
+        if msg_type == 'event_msg':
             payload = msg.get('payload')
             if isinstance(payload, dict):
                 planning_file = codex_planning_update(payload)
@@ -374,36 +305,6 @@ def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> L
                 if len(content) > 20:
                     result.append({'role': 'user', 'content': content, 'line': line_num})
 
-        elif msg_type == 'assistant':
-            msg_content = msg.get('message', {}).get('content', '')
-            text = text_content(msg_content)
-            tool_uses = []
-
-            if isinstance(msg_content, list):
-                for item in msg_content:
-                    if isinstance(item, dict) and item.get('type') == 'tool_use':
-                        tool_name = item.get('name', '')
-                        tool_input = item.get('input', {})
-                        if not isinstance(tool_input, dict):
-                            tool_input = {}
-                        if tool_name == 'Edit':
-                            tool_uses.append(f"Edit: {tool_input.get('file_path', 'unknown')}")
-                        elif tool_name == 'Write':
-                            tool_uses.append(f"Write: {tool_input.get('file_path', 'unknown')}")
-                        elif tool_name == 'Bash':
-                            cmd = tool_input.get('command', '')[:80]
-                            tool_uses.append(f"Bash: {cmd}")
-                        else:
-                            tool_uses.append(f"{tool_name}")
-
-            if text or tool_uses:
-                result.append({
-                    'role': 'assistant',
-                    'content': text[:600] if text else '',
-                    'tools': tool_uses,
-                    'line': line_num
-                })
-
         elif msg_type == 'response_item':
             payload = msg.get('payload')
             if not isinstance(payload, dict):
@@ -453,8 +354,6 @@ def main():
     # Find a substantial previous session
     target_session = None
     for session in sessions:
-        if runtime_name == 'claude' and not is_substantial_session(session):
-            continue
         target_session = session
         break
 
@@ -483,13 +382,12 @@ def main():
     print(f"Unsynced messages: {len(messages_after)}")
 
     print("\n--- UNSYNCED CONTEXT ---")
-    assistant_label = 'CODEX' if runtime_name == 'codex' else 'CLAUDE'
     for msg in messages_after[-15:]:  # Last 15 messages
         if msg['role'] == 'user':
             print(f"USER: {msg['content'][:300]}")
         else:
             if msg.get('content'):
-                print(f"{assistant_label}: {msg['content'][:300]}")
+                print(f"CODEX: {msg['content'][:300]}")
             if msg.get('tools'):
                 print(f"  Tools: {', '.join(msg['tools'][:4])}")
 

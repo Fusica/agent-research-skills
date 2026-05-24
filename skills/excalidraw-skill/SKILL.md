@@ -10,10 +10,9 @@ description: Programmatic canvas toolkit for creating, editing, and refining Exc
 Before doing anything, determine which mode is available. Run these checks **in order**:
 
 ### Check 1: MCP Server (Best experience)
-```bash
-mcp-cli tools | grep excalidraw
-```
-If you see tools like `excalidraw/batch_create_elements` → **use MCP mode**. Call MCP tools directly.
+Inspect the Codex tool list for Excalidraw MCP tools. If tools like
+`excalidraw/batch_create_elements` are available, use MCP mode and call those
+tools directly.
 
 ### Check 2: REST API (Fallback — works without MCP server)
 ```bash
@@ -28,10 +27,7 @@ If neither works, tell the user:
 > 2. Build: `npm ci && npm run build`
 > 3. Start canvas: `HOST=0.0.0.0 PORT=3000 npm run canvas`
 > 4. Open `http://localhost:3000` in a browser
-> 5. (Recommended) Install the MCP server for the best experience:
->    ```
->    claude mcp add excalidraw -s user -e EXPRESS_SERVER_URL=http://localhost:3000 -- node /path/to/mcp_excalidraw/dist/index.js
->    ```
+> 5. (Recommended) Register the MCP server in your Codex MCP configuration with `EXPRESS_SERVER_URL=http://localhost:3000` and command `node /path/to/mcp_excalidraw/dist/index.js`.
 
 ### MCP vs REST API Quick Reference
 

@@ -14,8 +14,8 @@ Create comprehensive research plans and paper architectures from a research topi
 
 ## References
 
-- Planning prompts from Paper2Code, AI-Researcher, AgentLaboratory: `~/.claude/skills/research-planning/references/planning-prompts.md`
-- Output schemas and templates: `~/.claude/skills/research-planning/references/output-schemas.md`
+- Planning prompts from Paper2Code, AI-Researcher, AgentLaboratory: `${CODEX_HOME:-$HOME/.codex}/skills/research-planning/references/planning-prompts.md`
+- Output schemas and templates: `${CODEX_HOME:-$HOME/.codex}/skills/research-planning/references/output-schemas.md`
 
 ## Workflow
 

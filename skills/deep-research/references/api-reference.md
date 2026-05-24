@@ -46,7 +46,7 @@ http://export.arxiv.org/api/query
 
 ### Script Usage
 ```bash
-python /Users/lingzhi/.claude/skills/deep-research/scripts/search_arxiv.py \
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_arxiv.py \
   --query "long context reasoning LLM" \
   --max-results 50 \
   --categories cs.AI cs.CL \
@@ -55,11 +55,11 @@ python /Users/lingzhi/.claude/skills/deep-research/scripts/search_arxiv.py \
   -o results.jsonl
 ```
 
-### WebFetch Usage
+### Codex Web Usage
 ```
-WebFetch http://export.arxiv.org/api/query?search_query=all:transformer+AND+cat:cs.AI&max_results=10&sortBy=relevance
+http://export.arxiv.org/api/query?search_query=all:transformer+AND+cat:cs.AI&max_results=10&sortBy=relevance
 ```
-Parse the Atom XML response to extract paper entries.
+Open the URL with Codex web open/browser and parse the Atom XML response, or use the script above for structured JSONL output.
 
 ---
 
@@ -71,7 +71,7 @@ https://api.semanticscholar.org/graph/v1
 ```
 
 ### Authentication
-- API key from `/Users/lingzhi/Code/keys.md` (field `S2_API_Key`)
+- API key from `$HOME/keys.md` (field `S2_API_Key`)
 - Header: `x-api-key: <key>`
 - Without key: 100 requests/5 min. With key: 1 request/second sustained.
 
@@ -130,7 +130,7 @@ externalIds,url,publicationDate,tldr,isOpenAccess,openAccessPdf
 
 ### Script Usage
 ```bash
-python /Users/lingzhi/.claude/skills/deep-research/scripts/search_semantic_scholar.py \
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/search_semantic_scholar.py \
   --query "long horizon reasoning LLM agent" \
   --max-results 100 \
   --min-citations 10 \
@@ -139,14 +139,15 @@ python /Users/lingzhi/.claude/skills/deep-research/scripts/search_semantic_schol
   -o results.jsonl
 ```
 
-### WebFetch Usage
+### Codex Web Usage
 ```
-WebFetch https://api.semanticscholar.org/graph/v1/paper/search?query=long+horizon+reasoning&fields=title,authors,abstract,year,citationCount,externalIds&limit=20
+https://api.semanticscholar.org/graph/v1/paper/search?query=long+horizon+reasoning&fields=title,authors,abstract,year,citationCount,externalIds&limit=20
 ```
+Open the URL with Codex web open/browser and parse the JSON response, or use the bundled script for JSONL output and retry handling.
 
 For a specific paper:
 ```
-WebFetch https://api.semanticscholar.org/graph/v1/paper/arxiv:2401.12345?fields=title,authors,abstract,year,citationCount,references
+https://api.semanticscholar.org/graph/v1/paper/arxiv:2401.12345?fields=title,authors,abstract,year,citationCount,references
 ```
 
 ---
@@ -154,7 +155,7 @@ WebFetch https://api.semanticscholar.org/graph/v1/paper/arxiv:2401.12345?fields=
 ## ar5iv (HTML Paper Access)
 
 ### Overview
-ar5iv renders arXiv papers as HTML5 pages. Use this when you need to read a paper without downloading the PDF, especially in WebFetch-only mode.
+ar5iv renders arXiv papers as HTML5 pages. Use this when you need to read a paper without downloading the PDF, especially in web-only mode.
 
 ### URL Pattern
 ```
@@ -167,18 +168,18 @@ https://ar5iv.labs.arxiv.org/html/2401.12345
 https://ar5iv.labs.arxiv.org/html/1706.03762
 ```
 
-### WebFetch Usage
+### Codex Web Usage
 ```
-WebFetch https://ar5iv.labs.arxiv.org/html/1706.03762
-Prompt: "Extract the abstract, introduction, methodology, and key results from this paper"
+https://ar5iv.labs.arxiv.org/html/1706.03762
 ```
+Open with Codex web open/browser, then extract the abstract, introduction, methodology, and key results.
 
 ### Notes
 - Not all papers render perfectly (LaTeX edge cases)
 - Figures may not display but captions are usually available
 - Math renders as MathML/text, readable but sometimes imperfect
 - Very recent papers (< 24h) may not yet be available
-- For papers that don't render, fall back to PDF via Read tool
+- For papers that do not render, fall back to PDF download and `extract_pdf.py`
 
 ---
 
@@ -194,11 +195,11 @@ https://api.openreview.net
 GET /notes?content.venue=ICLR+2024&limit=50
 ```
 
-### WebFetch Usage
+### Codex Web Usage
 ```
-WebFetch https://api.openreview.net/notes?content.venue=NeurIPS+2024&content.title=reasoning&limit=20
-Prompt: "Extract paper titles, authors, and ratings"
+https://api.openreview.net/notes?content.venue=NeurIPS+2024&content.title=reasoning&limit=20
 ```
+Open with Codex web open/browser and extract paper titles, authors, and ratings from the JSON response.
 
 ### Notes
 - Useful for finding accepted papers at top venues with review scores
@@ -214,23 +215,25 @@ Prompt: "Extract paper titles, authors, and ratings"
 https://arxiv.org/pdf/{arxiv_id}
 ```
 
-### Claude Code Read Tool
-Claude Code's `Read` tool can natively read PDF files:
+### Codex PDF Access
+For downloaded PDFs, use the bundled extractor:
+```bash
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/extract_pdf.py \
+  --pdf /path/to/downloaded/paper.pdf \
+  --output-dir texts/
 ```
-Read /path/to/downloaded/paper.pdf
-```
-This extracts text directly — no scripts needed for individual papers.
+If the active Codex environment provides direct PDF-reading support, that can be used for individual papers.
 
 ### Batch PDF Processing
 For multiple papers, use the scripts:
 ```bash
-python /Users/lingzhi/.claude/skills/deep-research/scripts/download_papers.py \
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/download_papers.py \
   --jsonl paper_db.jsonl \
   --output-dir papers/ \
   --max-downloads 20 \
   --sort-by-citations
 
-python /Users/lingzhi/.claude/skills/deep-research/scripts/pdf_extract.py \
+python ${CODEX_HOME:-$HOME/.codex}/skills/deep-research/scripts/extract_pdf.py \
   --input papers/ \
   --output-dir texts/ \
   --sections
